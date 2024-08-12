@@ -160,18 +160,24 @@ const BarGroup = ({ child }) =>
     ],
   });
 const BatteryModule = () =>
-  Stack({
-    transition: "slide_up_down",
-    transitionDuration: userOptions.animations.durationLarge,
-    children: {
-      laptop: Box({
-        className: "spacing-h-4",
-        children: [
-          BarGroup({ child: Utilities() }),
-          BarGroup({ child: BarBattery() }),
-        ],
-      }),
-      desktop: BarGroup({
+  // Stack({
+  //   transition: "slide_up_down",
+  //   transitionDuration: userOptions.animations.durationLarge,
+  //   children: {
+  //     laptop: Box({
+  //       className: "spacing-h-4",
+  //       children: [
+  //         BarGroup({ child: Utilities() }),
+  //         BarGroup({ child: BarBattery() }),
+  //       ],
+  //     }),
+  //     desktop: BarGroup({
+  Box({
+    className: "spacing-h-4",
+    children: [
+      BarGroup({ child: Utilities() }),
+      BarGroup({ child: BarBattery() }),
+      BarGroup({
         child: Box({
           hexpand: true,
           hpack: "center",
@@ -257,7 +263,7 @@ const BatteryModule = () =>
             }),
         }),
       }),
-    },
+    ],
     setup: (stack) =>
       Utils.timeout(10, () => {
         if (!Battery.available) stack.shown = "desktop";
