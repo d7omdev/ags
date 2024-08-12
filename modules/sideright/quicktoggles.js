@@ -13,6 +13,7 @@ import {
 import { setupCursorHover } from "../.widgetutils/cursorhover.js";
 import { MaterialIcon } from "../.commonwidgets/materialicon.js";
 import { sidebarOptionsStack } from "./sideright.js";
+import { languages } from "../.commonwidgets/statusicons_languages.js";
 
 export const ToggleIconWifi = (props = {}) =>
   Widget.Button({
@@ -335,4 +336,22 @@ export const ModulePowerIcon = (props = {}) =>
     setup: (button) => {
       setupCursorHover(button);
     },
+  });
+
+export const ModuleLanguageSwitcher = (props = {}) =>
+  Widget.Button({
+    attribute: {
+      language: "en",
+    },
+    className: "txt-small sidebar-iconbutton",
+    tooltipText: "Switch language",
+    onClicked: (self) => {
+      self.attribute.language = self.attribute.language === "en" ? "ara" : "en";
+      self.tooltipText = `Current language: ${self.attribute.language}`;
+    },
+    child: MaterialIcon("translate", "norm"),
+    setup: (self) => {
+      setupCursorHover(self);
+    },
+    ...props,
   });
