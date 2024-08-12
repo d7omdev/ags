@@ -159,6 +159,10 @@ const BarGroup = ({ child }) =>
       }),
     ],
   });
+function isNightTime() {
+  const currentHour = new Date().getHours();
+  return currentHour < 6 || currentHour > 18;
+}
 const BatteryModule = () =>
   // Stack({
   //   transition: "slide_up_down",
@@ -213,7 +217,9 @@ const BatteryModule = () =>
                       weather.current_condition[0][
                         `FeelsLike${userOptions.weather.preferredUnit}`
                       ];
-                    const weatherSymbol = WEATHER_SYMBOL[WWO_CODE[weatherCode]];
+                    const weatherSymbol = isNightTime()
+                      ? NIGHT_WEATHER_SYMBOL[WWO_CODE[weatherCode]]
+                      : WEATHER_SYMBOL[WWO_CODE[weatherCode]];
                     self.children[0].label = weatherSymbol;
                     self.children[1].label = `${temperature}°${userOptions.weather.preferredUnit} • Feels like ${feelsLike}°${userOptions.weather.preferredUnit}`;
                     self.tooltipText = weatherDesc;
