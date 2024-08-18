@@ -221,8 +221,11 @@ const BatteryModule = () =>
                       ? NIGHT_WEATHER_SYMBOL[WWO_CODE[weatherCode]]
                       : WEATHER_SYMBOL[WWO_CODE[weatherCode]];
                     self.children[0].label = weatherSymbol;
-                    self.children[1].label = `${temperature}°${userOptions.weather.preferredUnit} • Feels like ${feelsLike}°${userOptions.weather.preferredUnit}`;
-                    self.tooltipText = weatherDesc;
+                    // self.children[1].label = `${temperature}°${userOptions.weather.preferredUnit} • Feels like ${feelsLike}°${userOptions.weather.preferredUnit}`;
+                    self.children[1].label = `${temperature}°${userOptions.weather.preferredUnit}`;
+                    self.tooltipText =
+                      weatherDesc +
+                      ` • Feels like ${feelsLike}°${userOptions.weather.preferredUnit}`;
                   })
                   .catch((err) => {
                     try {
