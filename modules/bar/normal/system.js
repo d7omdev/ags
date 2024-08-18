@@ -55,14 +55,10 @@ const BarClock = () =>
       }),
       Widget.Label({
         className: "txt-smallie bar-date",
-        label: GLib.DateTime.new_now_local().format(
-          userOptions.time.dateFormatLong,
-        ),
+        label: GLib.DateTime.new_now_local().format("%a %d/%m/%y"),
         setup: (self) =>
           self.poll(userOptions.time.dateInterval, (label) => {
-            label.label = GLib.DateTime.new_now_local().format(
-              userOptions.time.dateFormatLong,
-            );
+            label.label = GLib.DateTime.new_now_local().format("%a %d/%m/%y");
           }),
       }),
     ],
