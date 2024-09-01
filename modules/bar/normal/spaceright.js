@@ -11,7 +11,7 @@ import { Tray } from "./tray.js";
 
 const SeparatorDot = () =>
   Widget.Revealer({
-    transition: "slide_left",
+    transition: "slide_right",
     revealChild: false,
     attribute: {
       count: SystemTray.items.length,
