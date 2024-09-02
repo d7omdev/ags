@@ -42,7 +42,7 @@ const BarClock = () =>
     className: "spacing-h-4 bar-clock-box",
     children: [
       Widget.Label({
-        className: "bar-time",
+        className: "bar-date",
         label: GLib.DateTime.new_now_local().format("%I:%M %p"),
         setup: (self) =>
           self.poll(userOptions.time.interval, (label) => {
