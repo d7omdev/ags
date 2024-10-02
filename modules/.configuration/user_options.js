@@ -147,7 +147,7 @@ let configOptions = {
         shown: 10,
     },
     dock: {
-        enabled: true,
+        enabled: false,
         hiddenThickness: 5,
         pinnedApps: ["zen-browser", "org.gnome.Nautilus", "kitty", "davinci-resolve"],
         layer: "top",
