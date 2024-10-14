@@ -284,8 +284,8 @@ const CoverArt = ({ player, ...rest }) => {
     });
 };
 
-let shuffleIcon = await execAsync('playerctl shuffle') === 'On' ? 'shuffle_on' : 'shuffle';
-let repeatIcon = await execAsync('playerctl loop') === 'Track' ? 'repeat_one_on' : await execAsync('playerctl loop') === 'Playlist' ? 'repeat_on' : 'repeat';
+let shuffleIcon = await execAsync('playerctl shuffle').catch(print()) === 'On' ? 'shuffle_on' : 'shuffle';
+let repeatIcon = await execAsync('playerctl loop').catch(print()) === 'Track' ? 'repeat_one_on' : await execAsync('playerctl loop') === 'Playlist' ? 'repeat_on' : 'repeat';
 const TrackControls = ({ player, ...rest }) =>
     Widget.Revealer({
         revealChild: false,
@@ -320,7 +320,7 @@ const TrackControls = ({ player, ...rest }) =>
                             await player.shuffle();
                             setTimeout(async () => {
                                 try {
-                                    const shuffleState = await execAsync('playerctl shuffle');
+                                    const shuffleState = await execAsync('playerctl shuffle').catch(print());
                                     const formattedState = shuffleState.trim();
                                     shuffleIcon = formattedState === 'On' ? 'shuffle_on' : 'shuffle';
                                     self.child.label = shuffleIcon;
@@ -345,7 +345,7 @@ const TrackControls = ({ player, ...rest }) =>
                         await player.loop();
                         setTimeout(async () => {
                             try {
-                                const repeatState = await execAsync('playerctl loop');
+                                const repeatState = await execAsync('playerctl loop').catch(print());
                                 const formattedState = repeatState.trim();
                                 repeatIcon = formattedState === 'Track' ? 'repeat_one_on' : formattedState === 'Playlist' ? 'repeat_on' : 'repeat';
                                 self.child.label = repeatIcon;
