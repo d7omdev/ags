@@ -30,19 +30,10 @@ menu {
   animation-iteration-count: 1;
 }
 
-menu>*:first-child {
-  font-weight: bold;
-}
-
-menu>*:first-child:hover,
-menu>*:first-child:focus {
-  background-color: transparent;
-}
-
-
 menubar>menuitem {
   border-radius: 0.545rem;
   -gtk-outline-radius: 0.545rem;
+  padding: 0.4em 1.5rem;
   min-width: 13.636rem;
   min-height: 2.727rem;
 }

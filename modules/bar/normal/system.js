@@ -93,9 +93,6 @@ const screenRecorderButton = () => {
                     className: "menu",
                     children: [
                         MenuItem({
-                            child: Label('Select recording type:'),
-                        }),
-                        MenuItem({
                             child: Label('Record region'),
                             onActivate: () => runScript('')
                         }),
