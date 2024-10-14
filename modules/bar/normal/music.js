@@ -84,17 +84,30 @@ const TrackProgress = () => {
         const mpris = Mpris.getPlayer('');
         if (!mpris) return;
         // Set circular progress value
-        circprog.css = `font-size: ${Math.max(mpris.position / mpris.length * 100, 0)}px;`
+        circprog.css = `font-size: ${Math.max(mpris.position / mpris.length * 100, 0)}px;`;
     }
-    return AnimatedCircProg({
+
+    const progressWidget = AnimatedCircProg({
         className: 'bar-music-circprog',
-        vpack: 'center', hpack: 'center',
+        vpack: 'center',
+        hpack: 'center',
         extraSetup: (self) => self
             .hook(Mpris, _updateProgress)
-            .poll(3000, _updateProgress)
-        ,
-    })
-}
+            .poll(3000, _updateProgress),
+    });
+
+    // Wrap the progress widget in EventBox to handle clicks
+    return EventBox({
+        child: progressWidget,
+        onPrimaryClick: () => {
+            const mpris = Mpris.getPlayer('');
+            if (mpris) {
+                // Toggle play/pause on click
+                execAsync('playerctl play-pause').catch(print);
+            }
+        }
+    });
+};
 
 const switchToRelativeWorkspace = async (self, num) => {
     try {
@@ -142,14 +155,16 @@ export default () => {
         maxWidthChars: 1, // Doesn't matter, just needs to be non negative
         setup: (self) => self.hook(Mpris, label => {
             const mpris = Mpris.getPlayer('');
-            if (mpris)
-                label.label = `${trimTrackTitle(mpris.trackTitle)} • ${mpris.trackArtists.join(', ')}`;
+            if (mpris) {
+                label.label = `${trimTrackTitle(mpris.trackTitle)}`;
+                self.tooltipText = `${trimTrackTitle(mpris.trackTitle)} • ${mpris.trackArtists.join(', ')}`;
+            }
             else
                 label.label = 'No media';
         }),
     })
     const musicStuff = Box({
-        className: 'spacing-h-10',
+        className: 'spacing-h-4',
         hexpand: true,
         children: [
             playingState,

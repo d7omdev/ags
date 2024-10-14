@@ -135,7 +135,11 @@ $bar_ws_width_focus_active: 2.045rem;
 .bar-time {
   @include titlefont;
   font-size: 1.1rem;
-  color: $timeOnLayer1;
+  color: $layer0;
+  background-color: $timeOnLayer1;
+  border-radius: 0.8rem;
+  padding: 0.150rem 0.414rem;
+
 }
 
 .bar-date {
