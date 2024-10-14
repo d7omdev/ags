@@ -14,13 +14,13 @@ const scripts = [
     {
         icon: 'nixos-symbolic',
         name: 'Trim system generations to 5',
-        command: `sudo ${ App.configDir }/scripts/quickscripts/nixos-trim-generations.sh 5 0 system`,
+        command: `sudo ${App.configDir}/scripts/quickscripts/nixos-trim-generations.sh 5 0 system`,
         enabled: distroID == 'nixos',
     },
     {
         icon: 'nixos-symbolic',
         name: 'Trim home manager generations to 5',
-        command: `${ App.configDir }/scripts/quickscripts/nixos-trim-generations.sh 5 0 home-manager`,
+        command: `${App.configDir}/scripts/quickscripts/nixos-trim-generations.sh 5 0 home-manager`,
         enabled: distroID == 'nixos',
     },
     {
@@ -61,43 +61,100 @@ const scripts = [
     },
 ]
 
-export default () => SidebarModule( {
-    icon: MaterialIcon( 'code', 'norm' ),
-    name: 'Quick scripts',
-    child: Box( {
+const personalScripts = [
+    {
+        icon: 'windows-symbolic',
+        name: 'Run Windows VM',
+        command: `/home/d7om/connect-windows.sh`,
+        enabled: true,
+    },
+    {
+        icon: 'resolve-symbolic',
+        name: 'Run Davinci Resolve',
+        command: `/home/d7om/launch_resolve.sh`,
+        enabled: true,
+    },
+]
+
+export const PersonalScripts = () => SidebarModule({
+    icon: MaterialIcon('terminal', 'norm'),
+    name: 'Personal scripts',
+    child: Box({
         vertical: true,
         className: 'spacing-v-5',
-        children: scripts.map( ( script ) => {
-            if ( !script.enabled ) return null
-            const scriptStateIcon = MaterialIcon( 'not_started', 'norm' )
-            return Box( {
+        children: personalScripts.map((script) => {
+            if (!script.enabled) return null
+            const scriptStateIcon = MaterialIcon('not_started', 'norm')
+            return Box({
                 className: 'spacing-h-5 txt',
                 children: [
-                    Icon( {
+                    Icon({
                         className: 'sidebar-module-btn-icon txt-large',
                         icon: script.icon,
-                    } ),
-                    Label( {
+                    }),
+                    Label({
                         className: 'txt-small',
                         hpack: 'start',
                         hexpand: true,
                         label: script.name,
                         tooltipText: script.command,
-                    } ),
-                    Button( {
+                    }),
+                    Button({
                         className: 'sidebar-module-scripts-button',
                         child: scriptStateIcon,
                         onClicked: () => {
                             closeEverything()
-                            execAsync( [ `bash`, `-c`, `${ userOptions.apps.terminal } fish -C "${ script.command }"` ] ).catch( print )
-                                .then( () => {
+                            execAsync([`bash`, `-c`, `${script.command}`])
+                                .catch(print)
+                                .then(() => {
                                     scriptStateIcon.label = 'done'
-                                } )
+                                })
                         },
                         setup: setupCursorHover,
-                    } ),
+                    }),
                 ],
-            } )
-        } ),
-    } )
-} );
+            })
+        }),
+    })
+});
+
+export default () => SidebarModule({
+    icon: MaterialIcon('code', 'norm'),
+    name: 'Quick scripts',
+    child: Box({
+        vertical: true,
+        className: 'spacing-v-5',
+        children: scripts.map((script) => {
+            if (!script.enabled) return null
+            const scriptStateIcon = MaterialIcon('not_started', 'norm')
+            return Box({
+                className: 'spacing-h-5 txt',
+                children: [
+                    Icon({
+                        className: 'sidebar-module-btn-icon txt-large',
+                        icon: script.icon,
+                    }),
+                    Label({
+                        className: 'txt-small',
+                        hpack: 'start',
+                        hexpand: true,
+                        label: script.name,
+                        tooltipText: script.command,
+                    }),
+                    Button({
+                        className: 'sidebar-module-scripts-button',
+                        child: scriptStateIcon,
+                        onClicked: () => {
+                            closeEverything()
+                            execAsync([`bash`, `-c`, `${userOptions.apps.terminal} fish -C "${script.command}"`]).catch(print)
+                                .then(() => {
+                                    scriptStateIcon.label = 'done'
+                                })
+                        },
+                        setup: setupCursorHover,
+                    }),
+                ],
+            })
+        }),
+    })
+});
