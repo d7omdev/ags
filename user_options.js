@@ -78,22 +78,22 @@ const userConfigOptions = {
     //     wsNumScale: null,
     //     wsNumMarginScale: null,
     // },
-    // sidebar: {
-    //     ai: {
-    //         extraGptModels: {},
-    //     },
-    //     image: {
-    //         columns: null,
-    //         batchCount: null,
-    //         allowNsfw: null,
-    //     },
-    //     pages: {
-    //         order: [],
-    //         apis: {
-    //             order: [],
-    //         },
-    //     },
-    // },
+    sidebar: {
+        //     ai: {
+        //         extraGptModels: {},
+        //     },
+        //     image: {
+        //         columns: null,
+        //         batchCount: null,
+        //         allowNsfw: null,
+        //     },
+        pages: {
+            // order: [],
+            apis: {
+                order: ["gemini", "gpt"],
+            },
+        },
+    },
     // search: {
     //     enableFeatures: {
     //         actions: null,

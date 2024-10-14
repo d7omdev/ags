@@ -1,10 +1,10 @@
 // This is for the right pills of the bar.
 import Widget from "resource:///com/github/Aylur/ags/widget.js"
 import * as Utils from "resource:///com/github/Aylur/ags/utils.js"
-const { Box, Label, Button, Overlay, Revealer, Scrollable, Stack, EventBox } =
+const { Box, Label, Button, Overlay, Revealer, Menu, MenuItem, Scrollable, Stack, EventBox } =
     Widget
 const { exec, execAsync } = Utils
-const { GLib } = imports.gi
+const { GLib, Gdk } = imports.gi
 import Battery from "resource:///com/github/Aylur/ags/service/battery.js"
 import { MaterialIcon } from "../../.commonwidgets/materialicon.js"
 import { AnimatedCircProg } from "../../.commonwidgets/cairo_circularprogress.js"
@@ -73,6 +73,63 @@ const UtilButton = ({ name, icon, onClicked }) =>
         label: `${icon}`,
     })
 
+const screenRecorderButton = () => {
+    let menu = null;
+
+    const runScript = (args) => {
+        const command = `~/.config/ags/scripts/record-script.sh ${args}`;
+        execAsync(['bash', '-c', command])
+            .then(() => print(`Executed: ${command}`))
+            .catch((err) => print(`Error executing ${command}: ${err}`));
+    };
+
+    const button = UtilButton({
+        name: "Screen recorder",
+        icon: "screen_record",
+        onClicked: (button) => {
+            if (!menu) {
+                print('Initializing menu');
+                menu = Menu({
+                    className: "menu",
+                    children: [
+                        MenuItem({
+                            child: Label('Select recording type:'),
+                        }),
+                        MenuItem({
+                            child: Label('Record region'),
+                            onActivate: () => runScript('')
+                        }),
+                        MenuItem({
+                            child: Label('Record full screen'),
+                            onActivate: () => runScript('--fullscreen')
+                        }),
+                        MenuItem({
+                            child: Label('Record full screen (with sound)'),
+                            onActivate: () => runScript('--fullscreen-sound')
+                        })
+                    ],
+                });
+            }
+
+            try {
+                menu.popup_at_widget(
+                    button,
+                    Gdk.Gravity.SOUTH,
+                    Gdk.Gravity.NORTH,
+                    null
+                );
+                menu.rect_anchor_dy = 6;
+                print('Menu popup called');
+            } catch (error) {
+                print(`Error showing menu: ${error}`);
+            }
+        },
+    });
+
+    return button;
+}
+
+
 const Utilities = () =>
     Box({
         hpack: "center",
@@ -94,13 +151,14 @@ const Utilities = () =>
                     Utils.execAsync(["hyprpicker", "-a"]).catch(print)
                 },
             }),
-            UtilButton({
-                name: "Toggle on-screen keyboard",
-                icon: "keyboard",
-                onClicked: () => {
-                    toggleWindowOnAllMonitors("osk")
-                },
-            }),
+            // UtilButton({
+            //     name: "Toggle on-screen keyboard",
+            //     icon: "keyboard",
+            //     onClicked: () => {
+            //         toggleWindowOnAllMonitors("osk")
+            //     },
+            // }),
+            screenRecorderButton(),
         ],
     })
 
