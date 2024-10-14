@@ -284,7 +284,8 @@ const CoverArt = ({ player, ...rest }) => {
     });
 };
 
-let shuffleIcon = "shuffle";
+let shuffleIcon = await execAsync('playerctl shuffle') === 'On' ? 'shuffle_on' : 'shuffle';
+let repeatIcon = await execAsync('playerctl loop') === 'Track' ? 'repeat_one_on' : await execAsync('playerctl loop') === 'Playlist' ? 'repeat_on' : 'repeat';
 const TrackControls = ({ player, ...rest }) =>
     Widget.Revealer({
         revealChild: false,
@@ -293,7 +294,7 @@ const TrackControls = ({ player, ...rest }) =>
         child: Widget.Box({
             ...rest,
             vpack: "center",
-            className: "osd-music-controls spacing-h-3",
+            className: "osd-music-controls spacing-h-4",
             children: [
                 Button({
                     className: "osd-music-controlbtn",
@@ -313,61 +314,50 @@ const TrackControls = ({ player, ...rest }) =>
                 }),
                 Button({
                     className: "osd-music-controlbtn",
-                    onClicked: async () => {
+                    tooltipText: `Shuffle`,
+                    onClicked: async (self) => {
                         try {
-                            // Toggle shuffle state
                             await player.shuffle();
-
-                            // Wait for a second before checking the new shuffle state
                             setTimeout(async () => {
                                 try {
-                                    // Get the current shuffle state after a delay
                                     const shuffleState = await execAsync('playerctl shuffle');
-                                    const formattedState = shuffleState.trim(); // Remove any extra whitespace
-
-                                    const playerName = player.name.charAt(0).toUpperCase() + player.name.slice(1);
-                                    const notificationMessage = `Shuffle ${formattedState}`;
-                                    await execAsync(`notify-send --urgency=low --icon=${player.name} "${playerName}" "${notificationMessage}"`);
-                                    shuffleIcon = formattedState === 'on' ? 'shuffle_on' : 'shuffle';
-
+                                    const formattedState = shuffleState.trim();
+                                    shuffleIcon = formattedState === 'On' ? 'shuffle_on' : 'shuffle';
+                                    self.child.label = shuffleIcon;
                                 } catch (error) {
                                     print(`Error retrieving shuffle state: ${error}`);
                                 }
-                            }, 1000); // Wait for 1 second before executing the state check
+                            }, 200);
                         } catch (error) {
                             print(`Error toggling shuffle: ${error}`);
                         }
                     },
                     child: Label({
                         className: "icon-material osd-music-controlbtn-txt",
-                        label: shuffleIcon, // Change this to an appropriate label or icon
+                        label: shuffleIcon,
                     }),
                 })
                 ,
                 Button({
                     className: "osd-music-controlbtn",
-                    onClicked: async () => {
+                    tooltipText: `Repeat`,
+                    onClicked: async (self) => {
                         await player.loop();
                         setTimeout(async () => {
                             try {
-                                // Command to launch your media player
                                 const repeatState = await execAsync('playerctl loop');
-                                const formattedState = repeatState.trim(); // Remove any extra whitespace
-
-                                const playerName = player.name.charAt(0).toUpperCase() + player.name.slice(1);
-                                const notificationMessage = `Repeat ${formattedState}`;
-                                await execAsync(`notify-send --urgency=low --icon=${player.name} "${playerName}" "${notificationMessage}"`);
-                                repeatIcon = formattedState === 'None' ? 'repeat' : formattedState === 'Track' ? 'repeat_one' : 'repeat';
-                                this.child.label = loopIcon; // Update the button label/icon
+                                const formattedState = repeatState.trim();
+                                repeatIcon = formattedState === 'Track' ? 'repeat_one_on' : formattedState === 'Playlist' ? 'repeat_on' : 'repeat';
+                                self.child.label = repeatIcon;
                             } catch (error) {
-                                print(`Error : ${error}`); // Handle any errors that occur
+                                print(`Error: ${error} `);
                             }
                         }
                             , 200);
                     },
                     child: Label({
                         className: "icon-material osd-music-controlbtn-txt",
-                        label: "repeat", // Change this to an appropriate label or icon
+                        label: repeatIcon,
                     }),
                 }),
             ],
@@ -473,7 +463,7 @@ const PlayState = ({ player }) => {
                             self.hook(
                                 player,
                                 (label) => {
-                                    label.label = `${player.playBackStatus == "Playing" ? "pause" : "play_arrow"}`;
+                                    label.label = `${player.playBackStatus == "Playing" ? "pause" : "play_arrow"} `;
                                 },
                                 "notify::play-back-status",
                             ),
