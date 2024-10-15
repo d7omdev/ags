@@ -53,7 +53,7 @@ const WindowTitle = async () => {
     }
 };
 
-export default async (monitor = 0) => {
+export default async (monitor = 0, showtitle = false) => {
     const optionalWindowTitleInstance = await WindowTitle();
     return Widget.EventBox({
         onScrollUp: () => {
@@ -81,7 +81,7 @@ export default async (monitor = 0) => {
                                 Widget.Box({
                                     vertical: true,
                                     className: "bar-space-button",
-                                    children: [optionalWindowTitleInstance],
+                                    children: showtitle ? [optionalWindowTitleInstance] : [],
                                 }),
                             ],
                         }),

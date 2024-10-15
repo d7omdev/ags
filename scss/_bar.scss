@@ -134,8 +134,8 @@ $bar_ws_width_focus_active: 2.045rem;
 
 .bar-time {
   @include titlefont;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  // font-weight: 600;
   // color: $layer0;
   // background-color: $workspaceLayer3;
   border-radius: 0.75rem;

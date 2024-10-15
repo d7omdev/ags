@@ -88,7 +88,6 @@ const screenRecorderButton = () => {
         icon: "screen_record",
         onClicked: (button) => {
             if (!menu) {
-                print('Initializing menu');
                 menu = Menu({
                     className: "menu",
                     children: [
@@ -109,14 +108,13 @@ const screenRecorderButton = () => {
             }
 
             try {
+                menu.rect_anchor_dy = 10;
                 menu.popup_at_widget(
                     button,
                     Gdk.Gravity.SOUTH,
                     Gdk.Gravity.NORTH,
                     null
                 );
-                menu.rect_anchor_dy = 6;
-                print('Menu popup called');
             } catch (error) {
                 print(`Error showing menu: ${error}`);
             }

@@ -65,7 +65,8 @@ export const Bar = async (monitor = 0) => {
                         }),
                     ],
                 }),
-                await NormalOptionalWorkspaces()
+                await NormalOptionalWorkspaces(),
+                await WindowTitle(monitor)
             ]),
         centerWidget: Widget.Box({
             className: 'spacing-h-4',
