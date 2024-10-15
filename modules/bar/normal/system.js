@@ -300,10 +300,10 @@ const BatteryModule = () =>
                     }, 3000)
                 },
             }),
-            BarGroup({ child: BarBattery() }),
+            Battery.percent < 100 ? BarGroup({ child: BarBattery() }) : null,
             BarGroup({
                 child: Box({
-                    hexpand: true,
+                    hexpand: false,
                     hpack: "center",
                     className: "spacing-h-4 txt-onSurfaceVariant",
                     children: [

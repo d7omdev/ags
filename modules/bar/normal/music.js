@@ -104,6 +104,7 @@ const TrackProgress = () => {
             if (mpris) {
                 // Toggle play/pause on click
                 execAsync('playerctl play-pause').catch(print);
+                showMusicControls.value = !showMusicControls.value
             }
         }
     });
