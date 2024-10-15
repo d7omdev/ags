@@ -24,9 +24,32 @@ export default (monitor = 0) => Widget.Window({
             children: [
                 IndicatorValues(monitor),
                 MusicControls(),
-                NotificationPopups(),
+                // NotificationPopups(),
                 ColorScheme(),
             ]
         })
     }),
 });
+
+export const PopupNotifications = (monitor = 0) => Widget.Window({
+    name: `notificationsindicator${monitor}`,
+    monitor,
+    className: 'indicator',
+    layer: 'overlay',
+    visible: true,
+    anchor: ['top', 'right'],
+    child: Widget.EventBox({
+        onHover: () => { //make the widget hide when hovering
+            Indicator.popup(-1);
+        },
+        child: Widget.Box({
+            vertical: true,
+            className: 'osd-window',
+            css: 'min-height: 2px; margin-right: 0.4rem;',
+            children: [
+                NotificationPopups(),
+            ]
+        })
+    }),
+});
+
