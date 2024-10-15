@@ -16,7 +16,7 @@ import Dock from './modules/dock/main.js';
 import Corner from './modules/screencorners/main.js';
 import Crosshair from './modules/crosshair/main.js';
 import Indicator, { PopupNotifications } from './modules/indicators/main.js';
-import Osk from './modules/onscreenkeyboard/main.js';
+// import Osk from './modules/onscreenkeyboard/main.js';
 import Overview from './modules/overview/main.js';
 import Session from './modules/session/main.js';
 import SideLeft from './modules/sideleft/main.js';
@@ -63,7 +63,7 @@ const Windows = () => [
     forTopMonitor(Cheatsheet),
     SideLeft(),
     SideRight(),
-    forTopMonitor(Osk),
+    // forTopMonitor(Osk),
     forTopMonitor(Session),
     ...(userOptions.dock.enabled ? [forTopMonitor(Dock)] : []),
     ...(userOptions.appearance.fakeScreenRounding !== 0 ? [
