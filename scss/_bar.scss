@@ -134,16 +134,17 @@ $bar_ws_width_focus_active: 2.045rem;
 
 .bar-time {
   @include titlefont;
-  font-size: 1.1rem;
-  color: $layer0;
-  background-color: $workspaceLayer3;
+  font-size: 1rem;
+  font-weight: 600;
+  // color: $layer0;
+  // background-color: $workspaceLayer3;
   border-radius: 0.75rem;
-  padding: 0.150rem 0.414rem;
-
 }
 
 .bar-date {
   color: $dateOnLayer1;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .bar-batt {
@@ -403,4 +404,17 @@ $bar_ws_width_focus_active: 2.045rem;
   min-width: 1.032rem;
   font-size: 1.032rem;
   padding: 0.205rem 0.341rem;
+}
+
+.bar-session-button {
+  // @include full-rounding;
+  // @include symbolic-icon;
+  color: #97425A;
+  margin-left: 1.5rem;
+}
+
+.bar-session-button:hover {
+  background-color: #97425A;
+  color: $layer0;
+  transition: 300ms ease-in-out;
 }
