@@ -42,7 +42,7 @@ async function batteryMessage() {
 export async function startBatteryWarningService() {
     Utils.timeout(1, () => {
         Battery.connect('changed', () => batteryMessage().catch(print));
-    })
+    });
 }
 
 export async function firstRunWelcome() {

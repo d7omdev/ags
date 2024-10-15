@@ -176,8 +176,11 @@ export default () => {
     const musicStuff = EventBox({
         className: 'spacing-h-4',
         onHover: () => {
-            showTrackTitleTemporarily()
+            trackTitleRevealer.revealChild = true;
         },
+        onHoverLost: () => { showTrackTitleTemporarily(); },
+        onScrollUp: () => execAsync('playerctl next').catch(print),
+        onScrollDown: () => execAsync('playerctl previous').catch(print),
         child: Box({
             children: [playingState, trackTitleRevealer]
         }),

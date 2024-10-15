@@ -76,48 +76,65 @@ const UtilButton = ({ name, icon, onClicked }) =>
 const Hyprland = (
     await import("resource:///com/github/Aylur/ags/service/hyprland.js")
 ).default;
-const clients = Hyprland.clients;
 
 const clientsClassesButton = () => {
     let menu = null;
+
+    const updateMenu = async (button) => {
+        const clients = Hyprland.clients;
+
+        if (!menu) {
+            menu = Menu({
+                className: "menu",
+                children: clients.map((client) => {
+                    return MenuItem({
+                        child: Label({
+                            vexpand: true,
+                            className: 'text',
+                            label: client.class + " • " + (client.title.length > 10 ? client.title.slice(0, 10) + "..." : client.title)
+                        }), onActivate: () => {
+                            execAsync(`wl-copy ${client.class}`).catch(print);
+                            execAsync(`notify-send --icon=info 'Class copied to clipboard' 'Copied class ${client.class}'`).catch(print);
+                        },
+                    });
+                }),
+            });
+        } else {
+            menu.children = clients.map((client) => {
+                return MenuItem({
+                    child: Label({
+                        vexpand: true,
+                        className: 'text',
+                        label: client.class + " • " + (client.title.length > 10 ? client.title.slice(0, 10) + "..." : client.title)
+                    }), onActivate: () => {
+                        execAsync(`wl-copy ${client.class}`).catch(print);
+                        execAsync(`notify-send --icon=info 'Class copied to clipboard' 'Copied class ${client.class}'`).catch(print);
+                    },
+                });
+            });
+        }
+
+        try {
+            menu.rect_anchor_dy = 8;
+            menu.popup_at_widget(
+                button,
+                Gdk.Gravity.SOUTH,
+                Gdk.Gravity.NORTH,
+                null
+            );
+        } catch (error) {
+            print(`Error showing menu: ${error}`);
+        }
+    };
+
     return UtilButton({
-        name: "Screen recorder",
+        name: "Click to copy class",
         icon: "select_window_2",
         onClicked: (button) => {
-            if (!menu) {
-                menu = Menu({
-                    className: "menu",
-                    children: clients.map((client) => {
-                        return MenuItem({
-                            child: Label({
-                                vexpand: true,
-                                className: 'text',
-                                label: client.class + " • " + (client.title.length > 10 ? client.title.slice(0, 10) + "..." : client.title)
-                            }), onActivate: () => {
-                                execAsync(`wl-copy ${client.class}`).catch(print);
-                                execAsync(`notify-send --icon=info 'Class copied to clipboard' 'Copied class ${client.class}'`).catch(print);
-                            },
-
-                        });
-                    }),
-                });
-            }
-
-            try {
-                menu.rect_anchor_dy = 8;
-                menu.popup_at_widget(
-                    button,
-                    Gdk.Gravity.SOUTH,
-                    Gdk.Gravity.NORTH,
-                    null
-                );
-            } catch (error) {
-                print(`Error showing menu: ${error}`);
-            }
+            updateMenu(button);
         }
-    })
-}
-
+    });
+};
 
 const screenRecorderButton = () => {
     let menu = null;
