@@ -73,6 +73,52 @@ const UtilButton = ({ name, icon, onClicked }) =>
         label: `${icon}`,
     })
 
+const Hyprland = (
+    await import("resource:///com/github/Aylur/ags/service/hyprland.js")
+).default;
+const clients = Hyprland.clients;
+
+const clientsClassesButton = () => {
+    let menu = null;
+    return UtilButton({
+        name: "Screen recorder",
+        icon: "select_window_2",
+        onClicked: (button) => {
+            if (!menu) {
+                menu = Menu({
+                    className: "menu",
+                    children: clients.map((client) => {
+                        return MenuItem({
+                            child: Label({
+                                vexpand: true,
+                                className: 'text',
+                                label: client.class + " • " + (client.title.length > 10 ? client.title.slice(0, 10) + "..." : client.title)
+                            }), onActivate: () => {
+                                execAsync(`wl-copy ${client.class}`).catch(print);
+                                execAsync(`notify-send --icon=info 'Class copied to clipboard' 'Copied class ${client.class}'`).catch(print);
+                            },
+
+                        });
+                    }),
+                });
+            }
+
+            try {
+                menu.rect_anchor_dy = 8;
+                menu.popup_at_widget(
+                    button,
+                    Gdk.Gravity.SOUTH,
+                    Gdk.Gravity.NORTH,
+                    null
+                );
+            } catch (error) {
+                print(`Error showing menu: ${error}`);
+            }
+        }
+    })
+}
+
+
 const screenRecorderButton = () => {
     let menu = null;
 
@@ -108,7 +154,7 @@ const screenRecorderButton = () => {
             }
 
             try {
-                menu.rect_anchor_dy = 10;
+                menu.rect_anchor_dy = 8;
                 menu.popup_at_widget(
                     button,
                     Gdk.Gravity.SOUTH,
@@ -124,38 +170,46 @@ const screenRecorderButton = () => {
     return button;
 }
 
+const ScreenshotButton = UtilButton({
+    name: "Screen snip",
+    icon: "screenshot_region",
+    onClicked: () => {
+        Utils.execAsync(
+            `${App.configDir}/scripts/grimblast.sh copysave area`,
+        ).catch(print)
+    },
+})
 
-const Utilities = () =>
-    Box({
-        hpack: "center",
-        className: "spacing-h-4",
-        children: [
-            UtilButton({
-                name: "Screen snip",
-                icon: "screenshot_region",
-                onClicked: () => {
-                    Utils.execAsync(
-                        `${App.configDir}/scripts/grimblast.sh copysave area`,
-                    ).catch(print)
-                },
-            }),
-            UtilButton({
-                name: "Color picker",
-                icon: "colorize",
-                onClicked: () => {
-                    Utils.execAsync(["hyprpicker", "-a"]).catch(print)
-                },
-            }),
-            // UtilButton({
-            //     name: "Toggle on-screen keyboard",
-            //     icon: "keyboard",
-            //     onClicked: () => {
-            //         toggleWindowOnAllMonitors("osk")
-            //     },
-            // }),
-            screenRecorderButton(),
-        ],
-    })
+
+const Utilities = Revealer({
+    revealChild: false,
+    transition: 'slide_left',
+    transitionDuration: 300,
+    child:
+        Box({
+            hpack: "center",
+            className: "spacing-h-4 margin-left-5",
+            children: [
+                UtilButton({
+                    name: "Color picker",
+                    icon: "colorize",
+                    onClicked: () => {
+                        Utils.execAsync(["hyprpicker", "-a"]).catch(print)
+                    },
+                }),
+                // UtilButton({
+                //     name: "Toggle on-screen keyboard",
+                //     icon: "keyboard",
+                //     onClicked: () => {
+                //         toggleWindowOnAllMonitors("osk")
+                //     },
+                // }),
+                screenRecorderButton(),
+                clientsClassesButton(),
+            ],
+        })
+
+})
 
 const BarBattery = () =>
     Box({
@@ -228,7 +282,24 @@ const BatteryModule = () =>
     Box({
         className: "spacing-h-4",
         children: [
-            BarGroup({ child: Utilities() }),
+            EventBox({
+                child:
+                    Widget.Box({
+                        className: "bar-group-margin bar-sides",
+                        children: [
+                            Widget.Box({
+                                className: "bar-group bar-group-standalone bar-group-pad-system margin-right-5",
+                                children: [ScreenshotButton, Utilities],
+                            }),
+                        ],
+                    }),
+                onHover: () => {
+                    Utilities.revealChild = true
+                    setTimeout(() => {
+                        Utilities.revealChild = false
+                    }, 3000)
+                },
+            }),
             BarGroup({ child: BarBattery() }),
             BarGroup({
                 child: Box({

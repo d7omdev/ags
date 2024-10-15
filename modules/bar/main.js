@@ -75,7 +75,11 @@ export const Bar = async (monitor = 0) => {
                 //     homogeneous: true,
                 //     children: [await NormalOptionalWorkspaces()],
                 // }),
-                SideModule([Music()]),
+                // SideModule([Music()]),
+                Music(),
+                Widget.Box({
+                    className: 'spacing-h-4',
+                }),
                 SideModule([System()]),
             ]
         }),

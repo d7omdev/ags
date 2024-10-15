@@ -121,7 +121,7 @@ const switchToRelativeWorkspace = async (self, num) => {
 export default () => {
     // TODO: use cairo to make button bounce smaller on click, if that's possible
     const playingState = Box({ // Wrap a box cuz overlay can't have margins itself
-        homogeneous: false,
+        homogeneous: true,
         children: [Overlay({
             child: Box({
                 vpack: 'center',
@@ -148,32 +148,69 @@ export default () => {
             ]
         })]
     });
-    const trackTitle = Label({
-        hexpand: true,
-        className: 'txt-smallie bar-music-txt',
-        truncate: 'end',
-        maxWidthChars: 1, // Doesn't matter, just needs to be non negative
-        setup: (self) => self.hook(Mpris, label => {
+
+    const trackTitleRevealer = Revealer({
+        revealChild: false,
+        transition: 'slide_left',
+        transitionDuration: 300, child: Label({
+            className: 'txt-smallie bar-music-txt track-title',
+            css: 'min-width: 150px;',
+            truncate: 'end',
+            setup: (self) => self.hook(Mpris, label => {
+                const mpris = Mpris.getPlayer('');
+                if (mpris) {
+                    label.label = `${trimTrackTitle(mpris.trackTitle)} • ${mpris.trackArtists.join(', ')}`;
+                }
+                else
+                    label.label = 'No media';
+            }),
+        }),
+    });
+    const showTrackTitleTemporarily = () => {
+        trackTitleRevealer.revealChild = true;
+        Utils.timeout(2000, () => {
+            trackTitleRevealer.revealChild = false;
+        });
+    };
+    const musicStuff = EventBox({
+        className: 'spacing-h-4',
+        onHover: () => {
+            showTrackTitleTemporarily()
+        },
+        child: Box({
+            children: [playingState, trackTitleRevealer]
+        }),
+        setup: (self) => self.hook(Mpris, () => {
             const mpris = Mpris.getPlayer('');
             if (mpris) {
-                label.label = `${trimTrackTitle(mpris.trackTitle)}`;
-                self.tooltipText = `${trimTrackTitle(mpris.trackTitle)} • ${mpris.trackArtists.join(', ')}`;
+                showTrackTitleTemporarily();
             }
-            else
-                label.label = 'No media';
         }),
-    })
-    const musicStuff = Box({
-        className: 'spacing-h-4',
-        hexpand: true,
-        // TODO: expand on hover
-        children: [
-            playingState,
-            trackTitle,
-        ]
-    })
-    const SystemResourcesOrCustomModule = (resourcesExpanded) => {
+    });
+    const SystemResourcesOrCustomModule = () => {
         // Check if $XDG_CACHE_HOME/ags/user/scripts/custom-module-poll.sh exists
+        const SysRevealer = Revealer({
+            revealChild: false,
+            transition: 'slide_left',
+            transitionDuration: 300,
+            child: Box({
+                className: 'spacing-h-10 margin-left-10',
+                children: [
+                    BarResource('Swap Usage', 'swap_horiz', `LANG=C free | awk '/^Swap/ {if ($2 > 0) printf("%.2f\\n", ($3/$2) * 100); else print "0";}'`,
+                        'bar-swap-circprog', 'bar-swap-txt', 'bar-swap-icon'),
+                    BarResource('CPU Usage', 'settings_motion_mode', `LANG=C top -bn1 | grep Cpu | sed 's/\\,/\\./g' | awk '{print $2}'`,
+                        'bar-cpu-circprog', 'bar-cpu-txt', 'bar-cpu-icon'),
+                ]
+            }),
+        })
+
+        const SysResources = Box({
+            children: [
+                BarResource('RAM Usage', 'memory', `LANG=C free | awk '/^Mem/ {printf("%.2f\\n", ($3/$2) * 100)}'`,
+                    'bar-ram-circprog', 'bar-ram-txt', 'bar-ram-icon'),
+                SysRevealer
+            ],
+        })
         if (GLib.file_test(CUSTOM_MODULE_CONTENT_SCRIPT, GLib.FileTest.EXISTS)) {
             const interval = Number(Utils.readFile(CUSTOM_MODULE_CONTENT_INTERVAL_FILE)) || 5000;
             return BarGroup({
@@ -197,41 +234,24 @@ export default () => {
                 })
             });
         } else return BarGroup({
-            child: Box({
-                children: [
-                    BarResource('RAM Usage', 'memory', `LANG=C free | awk '/^Mem/ {printf("%.2f\\n", ($3/$2) * 100)}'`,
-                        'bar-ram-circprog', 'bar-ram-txt', 'bar-ram-icon'),
-                    Revealer({
-                        revealChild: true,
-                        transition: 'slide_left',
-                        transitionDuration: userOptions.animations.durationLarge,
-                        child: Box({
-                            className: 'spacing-h-10 margin-left-10',
-                            children: [
-                                BarResource('Swap Usage', 'swap_horiz', `LANG=C free | awk '/^Swap/ {if ($2 > 0) printf("%.2f\\n", ($3/$2) * 100); else print "0";}'`,
-                                    'bar-swap-circprog', 'bar-swap-txt', 'bar-swap-icon'),
-                                BarResource('CPU Usage', 'settings_motion_mode', `LANG=C top -bn1 | grep Cpu | sed 's/\\,/\\./g' | awk '{print $2}'`,
-                                    'bar-cpu-circprog', 'bar-cpu-txt', 'bar-cpu-icon'),
-                            ]
-                        }),
-                        setup: (self) => self.hook(Mpris, label => {
-                            const mpris = Mpris.getPlayer('');
-                            self.revealChild = !mpris;
-                        }),
-                    })
-                ],
+            child: EventBox({
+                child: SysResources,
+                onHover: () => {
+                    SysRevealer.revealChild = true;
+                },
+                onHoverLost: () => {
+                    SysRevealer.revealChild = false;
+                },
             })
         });
     }
-    // TODO: Expand the resources on hover
-    let resourcesExpanded = false;
     return EventBox({
         onScrollUp: (self) => switchToRelativeWorkspace(self, -1),
         onScrollDown: (self) => switchToRelativeWorkspace(self, +1),
         child: Box({
             className: 'spacing-h-4',
             children: [
-                SystemResourcesOrCustomModule(resourcesExpanded),
+                SystemResourcesOrCustomModule(),
                 EventBox({
                     child: BarGroup({
                         child: musicStuff
