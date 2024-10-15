@@ -121,7 +121,7 @@ const switchToRelativeWorkspace = async (self, num) => {
 export default () => {
     // TODO: use cairo to make button bounce smaller on click, if that's possible
     const playingState = Box({ // Wrap a box cuz overlay can't have margins itself
-        homogeneous: true,
+        homogeneous: false,
         children: [Overlay({
             child: Box({
                 vpack: 'center',
@@ -166,12 +166,13 @@ export default () => {
     const musicStuff = Box({
         className: 'spacing-h-4',
         hexpand: true,
+        // TODO: expand on hover
         children: [
             playingState,
             trackTitle,
         ]
     })
-    const SystemResourcesOrCustomModule = () => {
+    const SystemResourcesOrCustomModule = (resourcesExpanded) => {
         // Check if $XDG_CACHE_HOME/ags/user/scripts/custom-module-poll.sh exists
         if (GLib.file_test(CUSTOM_MODULE_CONTENT_SCRIPT, GLib.FileTest.EXISTS)) {
             const interval = Number(Utils.readFile(CUSTOM_MODULE_CONTENT_INTERVAL_FILE)) || 5000;
@@ -215,22 +216,26 @@ export default () => {
                         }),
                         setup: (self) => self.hook(Mpris, label => {
                             const mpris = Mpris.getPlayer('');
-                            self.revealChild = (!mpris);
+                            self.revealChild = !mpris;
                         }),
                     })
                 ],
             })
         });
     }
+    // TODO: Expand the resources on hover
+    let resourcesExpanded = false;
     return EventBox({
         onScrollUp: (self) => switchToRelativeWorkspace(self, -1),
         onScrollDown: (self) => switchToRelativeWorkspace(self, +1),
         child: Box({
             className: 'spacing-h-4',
             children: [
-                SystemResourcesOrCustomModule(),
+                SystemResourcesOrCustomModule(resourcesExpanded),
                 EventBox({
-                    child: BarGroup({ child: musicStuff }),
+                    child: BarGroup({
+                        child: musicStuff
+                    }),
                     onPrimaryClick: () => showMusicControls.setValue(!showMusicControls.value),
                     onSecondaryClick: () => execAsync(['bash', '-c', 'playerctl next || playerctl position `bc <<< "100 * $(playerctl metadata mpris:length) / 1000000 / 100"` &']).catch(print),
                     onMiddleClick: () => execAsync('playerctl play-pause').catch(print),
