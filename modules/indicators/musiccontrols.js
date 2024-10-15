@@ -284,10 +284,11 @@ const CoverArt = ({ player, ...rest }) => {
     });
 };
 
-let shuffleIcon = await execAsync('playerctl shuffle').catch(print()) === 'On' ? 'shuffle_on' : 'shuffle';
-let repeatIcon = await execAsync('playerctl loop').catch(print()) === 'Track' ? 'repeat_one_on' : await execAsync('playerctl loop') === 'Playlist' ? 'repeat_on' : 'repeat';
-const TrackControls = ({ player, ...rest }) =>
-    Widget.Revealer({
+// NOTE: this is temporary, will be replaced with a better solution
+let shuffleIcon = "shuffle", repeatIcon = "repeat";
+const TrackControls = ({ player, ...rest }) => {
+
+    return Widget.Revealer({
         revealChild: false,
         transition: "slide_right",
         transitionDuration: userOptions.animations.durationLarge,
@@ -373,6 +374,7 @@ const TrackControls = ({ player, ...rest }) =>
                 "notify::play-back-status",
             ),
     });
+}
 
 const TrackSource = ({ player, ...rest }) =>
     Widget.Revealer({
