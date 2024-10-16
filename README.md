@@ -8,3 +8,5 @@
 
 #### goes best with my [dotfiles](https://github.com/d7omdev/dotfiles)
 
+## Preview:
+![preview gif](./preview.png)
