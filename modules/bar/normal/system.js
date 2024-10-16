@@ -138,6 +138,7 @@ const clientsClassesButton = () => {
 
 const screenRecorderButton = () => {
     let menu = null;
+    let recording = false;
 
     const runScript = (args) => {
         const command = `~/.config/ags/scripts/record-script.sh ${args}`;
@@ -156,15 +157,28 @@ const screenRecorderButton = () => {
                     children: [
                         MenuItem({
                             child: Label('Record region'),
-                            onActivate: () => runScript('')
+                            onActivate: (self) => {
+                                runScript('')
+                                recording = !recording;
+                                self.child.label = recording ? 'Recording region 🔴' : 'Record region';
+                            }
                         }),
                         MenuItem({
-                            child: Label('Record full screen'),
-                            onActivate: () => runScript('--fullscreen')
+                            child: Label('Record full screen 󰝟 '),
+                            onActivate: (self) => {
+                                runScript('--fullscreen')
+                                recording = !recording;
+                                self.child.label = recording ? 'Recording screen 🔴' : 'Record full screen 󰝟 ';
+
+                            }
                         }),
                         MenuItem({
-                            child: Label('Record full screen (with sound)'),
-                            onActivate: () => runScript('--fullscreen-sound')
+                            child: Label('Record full screen  '),
+                            onActivate: (self) => {
+                                runScript('--fullscreen-sound')
+                                recording = !recording;
+                                self.child.label = recording ? 'Recording screen   🔴' : 'Record full screen  ';
+                            }
                         })
                     ],
                 });
@@ -314,7 +328,7 @@ const BatteryModule = () =>
                     Utilities.revealChild = true
                     setTimeout(() => {
                         Utilities.revealChild = false
-                    }, 3000)
+                    }, 5000)
                 },
             }),
             Battery.percent < 100 ? BarGroup({ child: BarBattery() }) : null,
