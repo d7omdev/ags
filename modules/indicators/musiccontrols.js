@@ -1,4 +1,4 @@
-const { GLib } = imports.gi;
+const { GLib, Gdk } = imports.gi;
 import App from "resource:///com/github/Aylur/ags/app.js";
 import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
@@ -284,7 +284,6 @@ const CoverArt = ({ player, ...rest }) => {
     });
 };
 
-// NOTE: this is temporary, will be replaced with a better solution
 let shuffleIcon = "shuffle", repeatIcon = "repeat";
 const TrackControls = ({ player, ...rest }) => {
 
@@ -337,6 +336,14 @@ const TrackControls = ({ player, ...rest }) => {
                         className: "icon-material osd-music-controlbtn-txt",
                         label: shuffleIcon,
                     }),
+                    setup: (self) => self.hook(Mpris, async self => {
+                        const mpris = Mpris.getPlayer('');
+                        if (!mpris) return;
+                        const shuyffleState = await execAsync('playerctl shuffle').catch(print());
+                        shuffleIcon = shuyffleState === 'On' ? 'shuffle_on' : 'shuffle';
+                        self.child.label = shuffleIcon;
+                        self.child.tooltipText = `Shuffle | ${shuyffleState}`;
+                    }),
                 })
                 ,
                 Button({
@@ -359,6 +366,14 @@ const TrackControls = ({ player, ...rest }) => {
                     child: Label({
                         className: "icon-material osd-music-controlbtn-txt",
                         label: repeatIcon,
+                    }),
+                    setup: (self) => self.hook(Mpris, async self => {
+                        const mpris = Mpris.getPlayer('');
+                        if (!mpris) return;
+                        const repeatState = await execAsync('playerctl loop').catch(print());
+                        repeatIcon = repeatState === 'Track' ? 'repeat_one_on' : repeatState === 'Playlist' ? 'repeat_on' : 'repeat';
+                        self.child.label = repeatIcon;
+                        self.child.tooltipText = `Repeat | ${repeatState}`;
                     }),
                 }),
             ],
@@ -517,7 +532,7 @@ const MusicControlsWidget = (player) =>
                 ],
             }),
         ],
-    });
+    })
 
 export default () =>
     Revealer({
@@ -534,5 +549,5 @@ export default () =>
         setup: (self) =>
             self.hook(showMusicControls, (revealer) => {
                 revealer.revealChild = showMusicControls.value;
-            }),
+            })
     });
