@@ -18,18 +18,18 @@ const userConfigOptions = {
     //     durationSmall: null,
     //     durationLarge: null,
     // },
-    // appearance: {
-    //     autoDarkMode: {
-    //         enabled: null,
-    //         from: "",
-    //         to: "",
-    //     },
-    //     keyboardUseFlag: null,
-    //     layerSmoke: null,
-    //     layerSmokeStrength: null,
-    //     barRoundCorners: null,
-    //     fakeScreenRounding: null,
-    // },
+    appearance: {
+        //     autoDarkMode: {
+        //         enabled: null,
+        //         from: "",
+        //         to: "",
+        //     },
+        //     keyboardUseFlag: null,
+        //     layerSmoke: null,
+        //     layerSmokeStrength: null,
+        barRoundCorne: false,
+        //     fakeScreenRounding: null,
+    },
     // apps: {
     //     bluetooth: "",
     //     imageViewer: "",

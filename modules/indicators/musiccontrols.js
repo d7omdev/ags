@@ -21,6 +21,7 @@ const COVER_COLORSCHEME_SUFFIX = "_colorscheme.css";
 var lastCoverPath = "";
 
 function isRealPlayer(player) {
+    console.log(player)
     return (
         // Remove unecessary native buses from browsers if there's plasma integration
         !(

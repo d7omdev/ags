@@ -67,8 +67,8 @@ const Windows = () => [
     forTopMonitor(Session),
     ...(userOptions.dock.enabled ? [forTopMonitor(Dock)] : []),
     ...(userOptions.appearance.fakeScreenRounding !== 0 ? [
-        forTopMonitor((id) => Corner(id, 'top left', true)),
-        forTopMonitor((id) => Corner(id, 'top right', true)),
+        // forTopMonitor((id) => Corner(id, 'top left', true)),
+        // forTopMonitor((id) => Corner(id, 'top right', true)),
         forTopMonitor((id) => Corner(id, 'bottom left', true)),
         forTopMonitor((id) => Corner(id, 'bottom right', true)),
     ] : []),
