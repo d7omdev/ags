@@ -20,7 +20,7 @@
 menu {
   @include small-rounding;
   border: 1px solid mix($surfaceContainer, $onBackground, 80%); // I hate this
-  padding: 0.4rem;
+  padding: 0.5rem;
   background: opacify($surfaceContainer, 1);
   color: $onSurface;
   -gtk-outline-radius: 1.159rem;
@@ -39,11 +39,24 @@ menubar>menuitem {
 }
 
 menu>menuitem {
-  padding: 0.4em 1.5rem;
+  font-size: 0.955rem;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  margin-top: 0.5rem;
   background: transparent;
+  background-color: $layer2;
   transition: 0.2s ease background-color;
   border-radius: 0.545rem;
   -gtk-outline-radius: 0.545rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
 }
 
 menu>menuitem:hover,

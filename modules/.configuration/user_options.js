@@ -37,8 +37,8 @@ let configOptions = {
         'imageViewer': "loupe",
         'network': "XDG_CURRENT_DESKTOP=\"gnome\" gnome-control-center wifi",
         'settings': "XDG_CURRENT_DESKTOP=\"gnome\" gnome-control-center",
-        'taskManager': "gnome-usage",
-        'terminal': "foot", // This is only for shell actions
+        'taskManager': "missioncenter",
+        'terminal': "kitty", // This is only for shell actions
     },
     'battery': {
         'low': 20,
@@ -233,26 +233,38 @@ let configOptions = {
 
 // Override defaults with user's options
 let optionsOkay = true;
-function overrideConfigRecursive(userOverrides, configOptions = {}, check = true) {
+let incorrectOptions = [];
+
+function overrideConfigRecursive(userOverrides, configOptions = {}, check = true, currentKey = "") {
     for (const [key, value] of Object.entries(userOverrides)) {
+        const fullKey = currentKey ? `${currentKey}.${key}` : key;
+
         if (configOptions[key] === undefined && check) {
             optionsOkay = false;
-        }
-        else if (typeof value === 'object' && !(value instanceof Array)) {
+            incorrectOptions.push(fullKey);
+            // Log the missing option
+            console.log(`Config option '${fullKey}' is missing.`);
+        } else if (typeof value === 'object' && !(value instanceof Array)) {
             if (key === "substitutions" || key === "regexSubstitutions" || key === "extraGptModels") {
-                overrideConfigRecursive(value, configOptions[key], false);
-            } else overrideConfigRecursive(value, configOptions[key]);
+                overrideConfigRecursive(value, configOptions[key], false, fullKey);
+            } else {
+                overrideConfigRecursive(value, configOptions[key], true, fullKey);
+            }
         } else {
             configOptions[key] = value;
         }
     }
 }
+
 overrideConfigRecursive(userOverrides, configOptions);
-if (!optionsOkay) Utils.timeout(2000, () => Utils.execAsync(['notify-send',
-    'Update your user options',
-    'One or more config options don\'t exist',
-    '-a', 'ags',
-]).catch(print))
+
+if (!optionsOkay) {
+    Utils.timeout(2000, () => Utils.execAsync(['notify-send',
+        'Update your user options',
+        'One or more config options don\'t exist',
+        '-a', 'ags',
+    ])).catch(print);
+}
 
 globalThis['userOptions'] = configOptions;
 export default configOptions;
