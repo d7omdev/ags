@@ -23,6 +23,7 @@ var lastCoverPath = "";
 function isRealPlayer(player) {
     return (
         // Remove unecessary native buses from browsers if there's plasma integration
+        !(hasPlasmaIntegration && player.trackTitle.startsWith("Google Meet")) &&
         !(
             hasPlasmaIntegration &&
             player.busName.startsWith("org.mpris.MediaPlayer2.firefox")
@@ -60,6 +61,7 @@ function detectMediaSource(link) {
     if (domain == "ytimg.com") return "󰗃 Youtube";
     if (domain == "discordapp.net") return "󰙯 Discord";
     if (domain == "sndcdn.com") return "󰓀 SoundCloud";
+    if (domain == "scdn.co") return "󰓇 Spotify";
     return domain;
 }
 
@@ -502,12 +504,20 @@ const MusicControlsWidget = (player) =>
                 className: "spacing-v-5 osd-music-info",
                 children: [
                     Box({
-                        vertical: true,
+                        // vertical: true,
                         vpack: "center",
                         hexpand: true,
                         children: [
-                            TrackTitle({ player: player }),
-                            TrackArtists({ player: player }),
+                            Box({
+                                vertical: true,
+                                vpack: "center",
+                                hexpand: true,
+                                children: [
+                                    TrackTitle({ player: player }),
+                                    TrackArtists({ player: player }),
+                                ],
+                            }),
+                            TrackSource({ vpack: 'center', player: player }),
                         ],
                     }),
                     Box({ vexpand: true }),

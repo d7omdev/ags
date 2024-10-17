@@ -159,7 +159,16 @@ export default () => {
             truncate: 'end',
             maxWidthChars: 20,
             setup: (self) => self.hook(Mpris, label => {
-                const mpris = Mpris.getPlayer('');
+                const players = Mpris.players;
+                let mpris = '';
+                players.forEach(player => {
+                    if (player.name === 'spotify') {
+                        mpris = player
+                        return
+                    }
+                    mpris = player;
+                })
+
                 if (mpris) {
                     label.label = `${trimTrackTitle(mpris.trackTitle.substring(0, 20))} • ${mpris.trackArtists.join(', ')} `
                 }
