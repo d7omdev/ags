@@ -153,7 +153,8 @@ export default () => {
     const trackTitleRevealer = Revealer({
         revealChild: false,
         transition: 'slide_left',
-        transitionDuration: 300, child: Label({
+        transitionDuration: 300,
+        child: Label({
             className: 'txt-smallie bar-music-txt track-title',
             truncate: 'end',
             maxWidthChars: 20,
@@ -178,7 +179,7 @@ export default () => {
         onHover: () => {
             trackTitleRevealer.revealChild = true;
         },
-        onHoverLost: () => { showTrackTitleTemporarily(); },
+        onHoverLost: () => { trackTitleRevealer.revealChild = false; },
         onScrollUp: () => execAsync('playerctl next').catch(print),
         onScrollDown: () => execAsync('playerctl previous').catch(print),
         child: Box({
@@ -244,7 +245,9 @@ export default () => {
                     SysRevealer.revealChild = true;
                 },
                 onHoverLost: () => {
-                    SysRevealer.revealChild = false;
+                    setTimeout(() => {
+                        SysRevealer.revealChild = false;
+                    }, 2000);
                 },
             })
         });
