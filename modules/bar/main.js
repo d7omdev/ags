@@ -76,10 +76,10 @@ export const Bar = async (monitor = 0) => {
                 //     children: [await NormalOptionalWorkspaces()],
                 // }),
                 // SideModule([Music()]),
-                // Widget.Box({
-                //     className: 'spacing-h-4',
-                // }),
-                SideModule([Music(), System()]),
+
+                SideModule([Music(), Widget.Box({
+                    className: 'spacing-h-4',
+                }), System()]),
             ]
         }),
         endWidget: Indicators(),

@@ -144,19 +144,6 @@ export const KeystrokeMonitor = () => {
     });
 };
 
-// export const KeyVisRevealer = () => Widget.Revealer({
-//     transition: "slide_left",
-//     transitionDuration: 400,
-//     child: Widget.Box({
-//         vertical: true,
-//         className: 'osd-window',
-//         css: 'min-height: 50px; min-width: 200px; margin: 20px;',
-//         children: [
-//             KeystrokeMonitor(),
-//         ]
-//     })
-// })
-
 export default (monitor = 0) => Widget.Window({
     name: 'keyvis',
     monitor,
