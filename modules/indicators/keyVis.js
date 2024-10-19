@@ -72,7 +72,6 @@ function scheduleBufferClear(self) {
 export const KeystrokeMonitor = () => {
     return Box({
         hpack: 'center',
-        className: 'keystroke-monitor',
         homogeneous: true,
         vexpand: true,
         hexpand: true,
