@@ -27,15 +27,15 @@ import { COMPILED_STYLE_DIR } from './init.js';
 
 // NOTE: This is disabled, only the top monitor is used.
 
-// const range = (length, start = 1) => Array.from({ length }, (_, i) => i + start);
-// function forTopMonitor(widget) {
-//     const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
-//     return range(n, 0).map(widget).flat(1);
-// }
-// function forTopMonitorAsync(widget) {
-//     const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
-//     return range(n, 0).forEach((n) => widget(n).catch(print))
-// }
+const range = (length, start = 1) => Array.from({ length }, (_, i) => i + start);
+function forMonitors(widget) {
+    const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+    return range(n, 0).map(widget).flat(1);
+}
+function forMonitorsAsync(widget) {
+    const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+    return range(n, 0).forEach((n) => widget(n).catch(print))
+}
 
 function forTopMonitor(widget) {
     const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
@@ -66,7 +66,8 @@ const Windows = () => [
     SideLeft(),
     SideRight(),
     // forTopMonitor(Osk),
-    forTopMonitor(Session),
+    // forTopMonitor(Session),
+    forMonitors(Session),
     ...(userOptions.dock.enabled ? [forTopMonitor(Dock)] : []),
     ...(userOptions.appearance.fakeScreenRounding !== 0 ? [
         // forTopMonitor((id) => Corner(id, 'top left', true)),
