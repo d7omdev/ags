@@ -35,7 +35,7 @@ export const PopupNotifications = (monitor = 0) => Widget.Window({
     name: `notificationsindicator${monitor}`,
     monitor,
     className: 'indicator',
-    layer: 'overlay',
+    layer: 'top',
     visible: true,
     anchor: ['top', 'right'],
     child: Widget.EventBox({

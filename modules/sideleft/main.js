@@ -9,7 +9,7 @@ export default () =>
         keymode: "on-demand",
         anchor: ["left", "top", "bottom"],
         name: "sideleft",
-        layer: "overlay",
+        layer: "top",
         child: Box({
             children: [
                 SidebarLeft(),
