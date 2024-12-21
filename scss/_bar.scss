@@ -174,7 +174,6 @@ $bar_ws_width_focus_active: 2.045rem;
   color: $errorContainer;
 }
 
-
 .bar-batt-low {
   background-color: $error;
   color: $errorContainer;
@@ -320,7 +319,7 @@ $bar_ws_width_focus_active: 2.045rem;
 }
 
 .bar-wintitle-topdesc {
-  margin-top: -0.136rem;
+  margin-top: 0.2rem;
   margin-bottom: -0.341rem;
   color: $windowtitleOnLayer0Inactive;
 }
@@ -333,7 +332,7 @@ $bar_ws_width_focus_active: 2.045rem;
   padding: 0.341rem;
 }
 
-.bar-space-button>box:first-child {
+.bar-space-button > box:first-child {
   @include full-rounding;
   padding: 0rem 0.682rem;
 }
@@ -344,7 +343,7 @@ $bar_ws_width_focus_active: 2.045rem;
   }
 }
 
-.bar-space-area-rightmost>box {
+.bar-space-area-rightmost > box {
   padding-right: 2.386rem;
 }
 
@@ -410,12 +409,12 @@ $bar_ws_width_focus_active: 2.045rem;
 .bar-session-button {
   // @include full-rounding;
   // @include symbolic-icon;
-  color: #97425A;
+  color: #97425a;
   margin-left: 2rem;
 }
 
 .bar-session-button:hover {
-  background-color: #97425A;
+  background-color: #97425a;
   color: $layer0;
   transition: 200ms ease-in-out;
 }
