@@ -1,12 +1,15 @@
-# My [AGS](https://github.com/Aylur/ags) configs 
 
-### This is my personal configs for AGS.
-### Its a Modified version of [end-4's hypeland dots](https://github.com/end-4/dots-hyprland)
-## Main Changes:
-- More Minimal and Clean
-- Adds some more functionality
+# Starter Config
 
-#### goes best with my [dotfiles](https://github.com/d7omdev/dotfiles)
+if suggestions don't work, first make sure
+you have TypeScript LSP working in your editor
 
-## Preview:
-![preview gif](./preview.png)
+if you do not want typechecking only suggestions
+
+```json
+// tsconfig.json
+"checkJs": false
+```
+
+types are symlinked to:
+/usr/share/com.github.Aylur.ags/types
