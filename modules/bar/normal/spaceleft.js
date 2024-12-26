@@ -43,7 +43,7 @@ const WindowTitle = async () => {
             maxWidthChars: 1, // Doesn't matter, just needs to be non negative
             className: "txt-smallie bar-wintitle-txt",
             setup: (self) =>
-              self.hook(Hyprland.active.client, (label) => {
+              self.hook(Hyprland.active, (label) => {
                 // Hyprland.active.client
                 label.label =
                   Hyprland.active.client.title.length === 0
