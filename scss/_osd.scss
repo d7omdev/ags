@@ -33,8 +33,8 @@
 
   progress {
     @include fluent_decel;
-    min-height: 0.680rem;
-    min-width: 0.680rem;
+    min-height: 0.68rem;
+    min-width: 0.68rem;
     margin: 0rem 0.137rem;
     border-radius: 10rem;
     background-color: $onLayer2;
@@ -52,6 +52,10 @@
   font-size: 1.688rem;
   font-weight: 500;
   color: $onLayer0;
+}
+
+.osd-value-icon {
+  font-size: 1.688rem;
 }
 
 .osd-brightness {
@@ -92,8 +96,8 @@
 }
 
 .osd-color {
-  border-radius: 0.650rem;
-  -gtk-outline-radius: 0.650rem;
+  border-radius: 0.65rem;
+  -gtk-outline-radius: 0.65rem;
   min-width: 2.727rem;
   min-height: 1.705rem;
   padding: 0rem 0.341rem;
