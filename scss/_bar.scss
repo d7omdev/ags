@@ -418,3 +418,11 @@ $bar_ws_width_focus_active: 2.045rem;
   color: $layer0;
   transition: 200ms ease-in-out;
 }
+
+.focused-app {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.bar-active-app {
+  border-radius: 0.7rem;
+}

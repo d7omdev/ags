@@ -8,6 +8,7 @@ import {
   EventBox,
   Overlay,
 } from "resource:///com/github/Aylur/ags/widget.js";
+import { ActiveApps } from "./active_apps.js";
 
 const WindowTitle = async () => {
   try {
@@ -83,7 +84,8 @@ export default async (monitor = 0, showtitle = true) => {
           children: showtitle
             ? [
                 Widget.Box({ className: "bar-corner-spacing" }),
-                optionalWindowTitleInstance,
+                // optionalWindowTitleInstance,
+                ActiveApps(),
               ]
             : [],
         }),
