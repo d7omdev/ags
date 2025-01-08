@@ -173,5 +173,12 @@ export const ActiveApps = (props = {}) => {
         children: [appsBox],
       }),
     ],
+    setup: (self) => {
+      self.hook(Hyprland.active, (self) => {
+        Hyprland.clients.length === 0
+          ? (self.visible = false)
+          : (self.visible = true);
+      });
+    },
   });
 };
