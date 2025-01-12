@@ -13,27 +13,6 @@ const createContextMenu = (client) =>
         child: Box({
           hpack: "start",
           children: [
-            Icon({ icon: "window-maximize-symbolic", size: 16 }),
-            Label({ label: "Maximize", className: "margin-left-5" }),
-          ],
-        }),
-        onActivate: () => execAsync(`hyprctl dispatch fullscreen 1`),
-      }),
-      MenuItem({
-        child: Box({
-          hpack: "start",
-          children: [
-            Icon({ icon: "window-minimize-symbolic", size: 16 }),
-            Label({ label: "Minimize", className: "margin-left-5" }),
-          ],
-        }),
-        onActivate: () =>
-          execAsync(`hyprctl dispatch movetoworkspacesilent special`),
-      }),
-      MenuItem({
-        child: Box({
-          hpack: "start",
-          children: [
             Icon({ icon: "window-close-symbolic", size: 16 }),
             Label({ label: "Close", className: "margin-left-5" }),
           ],
@@ -114,7 +93,7 @@ const AppButton = (client) => {
         menu.popup_at_widget(button, Gravity.SOUTH, Gravity.NORTH, null);
       },
       setup: (self) =>
-        self.hook(Hyprland.active, (self) => {
+        self.hook(Hyprland, (self) => {
           self.toggleClassName(
             "focused-app",
             client.address === Hyprland.active.client.address,
