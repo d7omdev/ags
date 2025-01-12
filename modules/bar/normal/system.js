@@ -15,7 +15,9 @@ const {
 } = Widget;
 const { exec, execAsync } = Utils;
 const { GLib, Gdk } = imports.gi;
+const { Gravity } = imports.gi.Gdk;
 import Battery from "resource:///com/github/Aylur/ags/service/battery.js";
+import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
 import { MaterialIcon } from "../../.commonwidgets/materialicon.js";
 import { AnimatedCircProg } from "../../.commonwidgets/cairo_circularprogress.js";
 import {
@@ -83,76 +85,44 @@ const UtilButton = ({ name, icon, onClicked }) =>
     label: `${icon}`,
   });
 
-const Hyprland = (
-  await import("resource:///com/github/Aylur/ags/service/hyprland.js")
-).default;
-
 const clientsClassesButton = () => {
-  let menu = null;
+  const menu = Menu({
+    className: "menu",
+    setup: (self) => {
+      self.rect_anchor_dy = 8;
 
-  const updateMenu = async (button) => {
-    const clients = Hyprland.clients;
-
-    if (!menu) {
-      menu = Menu({
-        className: "menu",
-        children: clients.map((client) => {
-          return MenuItem({
-            child: Label({
-              vexpand: true,
-              className: "text",
-              label:
-                client.class +
-                " • " +
-                (client.title.length > 10
-                  ? client.title.slice(0, 10) + "..."
-                  : client.title),
-            }),
-            onActivate: () => {
-              execAsync(`wl-copy ${client.class}`).catch(print);
-              execAsync(
-                `notify-send --icon=info 'Class copied to clipboard' 'Copied class ${client.class}'`,
-              ).catch(print);
-            },
-          });
-        }),
+      self.hook(Hyprland, (menu) => {
+        Hyprland.clients.length === 0
+          ? (menu.children = [MenuItem({ child: Label("No clients found") })])
+          : (menu.children = Hyprland.clients.map((client) => {
+              return MenuItem({
+                child: Label({
+                  vexpand: true,
+                  className: "text",
+                  label:
+                    client.class +
+                    " • " +
+                    (client.title.length > 10
+                      ? client.title.slice(0, 10) + "..."
+                      : client.title),
+                }),
+                onActivate: () => {
+                  execAsync(`wl-copy ${client.class}`).catch(print);
+                  execAsync(
+                    `notify-send --icon=info 'Class copied to clipboard' 'Copied class ${client.class}'`,
+                  ).catch(print);
+                },
+              });
+            }));
       });
-    } else {
-      menu.children = clients.map((client) => {
-        return MenuItem({
-          child: Label({
-            vexpand: true,
-            className: "text",
-            label:
-              client.class +
-              " • " +
-              (client.title.length > 10
-                ? client.title.slice(0, 10) + "..."
-                : client.title),
-          }),
-          onActivate: () => {
-            execAsync(`wl-copy ${client.class}`).catch(print);
-            execAsync(
-              `notify-send --icon=info 'Class copied to clipboard' 'Copied class ${client.class}'`,
-            ).catch(print);
-          },
-        });
-      });
-    }
-
-    try {
-      menu.rect_anchor_dy = 8;
-      menu.popup_at_widget(button, Gdk.Gravity.SOUTH, Gdk.Gravity.NORTH, null);
-    } catch (error) {
-      print(`Error showing menu: ${error}`);
-    }
-  };
+    },
+  });
 
   return UtilButton({
     name: "Click to copy class",
     icon: "select_window_2",
     onClicked: (button) => {
-      updateMenu(button);
+      menu.popup_at_widget(button, Gravity.SOUTH, Gravity.NORTH, null);
     },
   });
 };
@@ -354,7 +324,13 @@ const BatteryModule = () =>
           }, 5000);
         },
       }),
-      Battery.percent < 100 ? BarGroup({ child: BarBattery() }) : null,
+      Box({
+        child: BarGroup({ child: BarBattery() }),
+        setup: (self) =>
+          self.hook(Battery, (box) => {
+            box.visible = !Battery.charged;
+          }),
+      }),
       BarGroup({
         child: Box({
           hexpand: false,

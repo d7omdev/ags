@@ -98,28 +98,30 @@ const AppButton = (client) => {
       ? client.title.slice(0, 10) + "..."
       : client.title);
 
-  return Button({
-    className: "bar-util-btn bar-active-app",
-    tooltipText: tooltipText,
-    child: Icon({
-      icon: icon,
-      size: 20,
-    }),
-    css: `margin-left: 2px; margin-right: 2px;`,
-    onClicked: () => {
-      exec(`hyprctl dispatch focuswindow address:${client.address}`);
-    },
-    onSecondaryClick: (button) => {
-      const menu = createContextMenu(client);
-      menu.popup_at_widget(button, Gravity.SOUTH, Gravity.NORTH, null);
-    },
-    setup: (self) =>
-      self.hook(Hyprland.active, (self) => {
-        self.toggleClassName(
-          "focused-app",
-          client.address === Hyprland.active.client.address,
-        );
+  return Box({
+    child: Button({
+      className: "bar-util-btn bar-active-app",
+      child: Icon({
+        icon: icon,
+        size: 20,
       }),
+      css: `margin-left: 2px; margin-right: 2px;`,
+      onClicked: () => {
+        exec(`hyprctl dispatch focuswindow address:${client.address}`);
+      },
+      onSecondaryClick: (button) => {
+        const menu = createContextMenu(client);
+        menu.popup_at_widget(button, Gravity.SOUTH, Gravity.NORTH, null);
+      },
+      setup: (self) =>
+        self.hook(Hyprland.active, (self) => {
+          self.toggleClassName(
+            "focused-app",
+            client.address === Hyprland.active.client.address,
+            (self.tooltipText = tooltipText),
+          );
+        }),
+    }),
   });
 };
 
