@@ -1,162 +1,174 @@
-const { Gtk } = imports.gi
-import App from 'resource:///com/github/Aylur/ags/app.js'
-import Widget from 'resource:///com/github/Aylur/ags/widget.js'
-import * as Utils from 'resource:///com/github/Aylur/ags/utils.js'
-const { execAsync, exec } = Utils
-const { Box, Button, EventBox, Icon, Label, Scrollable } = Widget
-import SidebarModule from './module.js'
-import { MaterialIcon } from '../../.commonwidgets/materialicon.js'
-import { setupCursorHover } from '../../.widgetutils/cursorhover.js'
+const { Gtk } = imports.gi;
+import App from "resource:///com/github/Aylur/ags/app.js";
+import Widget from "resource:///com/github/Aylur/ags/widget.js";
+import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
+const { execAsync, exec } = Utils;
+const { Box, Button, EventBox, Icon, Label, Scrollable } = Widget;
+import SidebarModule from "./module.js";
+import { MaterialIcon } from "../../.commonwidgets/materialicon.js";
+import { setupCursorHover } from "../../.widgetutils/cursorhover.js";
 
-App.addIcons(`${App.configDir}/assets`)
+App.addIcons(`${App.configDir}/assets`);
 
-import { distroID, isArchDistro, isDebianDistro, hasFlatpak } from '../../.miscutils/system.js'
+import {
+  distroID,
+  isArchDistro,
+  isDebianDistro,
+  hasFlatpak,
+} from "../../.miscutils/system.js";
 
 const scripts = [
-    {
-        icon: 'nixos-symbolic',
-        name: 'Trim system generations to 5',
-        command: `sudo ${App.configDir}/scripts/quickscripts/nixos-trim-generations.sh 5 0 system`,
-        enabled: distroID == 'nixos',
-    },
-    {
-        icon: 'nixos-symbolic',
-        name: 'Trim home manager generations to 5',
-        command: `${App.configDir}/scripts/quickscripts/nixos-trim-generations.sh 5 0 home-manager`,
-        enabled: distroID == 'nixos',
-    },
-    {
-        icon: 'ubuntu-symbolic',
-        name: 'Update packages',
-        command: `sudo apt update && sudo apt upgrade -y`,
-        enabled: isDebianDistro,
-    },
-    {
-        icon: 'fedora-symbolic',
-        name: 'Update packages',
-        command: `sudo dnf upgrade -y`,
-        enabled: distroID == 'fedora',
-    },
-    {
-        icon: 'arch-symbolic',
-        name: 'Update packages',
-        command: `sudo pacman -Syyu`,
-        enabled: isArchDistro,
-    },
-    {
-        icon: 'arch-symbolic',
-        name: 'List installed packages',
-        command: `pacman -Qe`,
-        enabled: isArchDistro,
-    },
-    {
-        icon: 'arch-symbolic',
-        name: 'Remove orphan packages',
-        command: `sudo pacman -R $(pacman -Qdtq)`,
-        enabled: isArchDistro,
-    },
-    {
-        icon: 'flatpak-symbolic',
-        name: 'Uninstall unused flatpak packages',
-        command: `flatpak uninstall --unused`,
-        enabled: hasFlatpak,
-    },
-]
+  {
+    icon: "nixos-symbolic",
+    name: "Trim system generations to 5",
+    command: `sudo ${App.configDir}/scripts/quickscripts/nixos-trim-generations.sh 5 0 system`,
+    enabled: distroID == "nixos",
+  },
+  {
+    icon: "nixos-symbolic",
+    name: "Trim home manager generations to 5",
+    command: `${App.configDir}/scripts/quickscripts/nixos-trim-generations.sh 5 0 home-manager`,
+    enabled: distroID == "nixos",
+  },
+  {
+    icon: "ubuntu-symbolic",
+    name: "Update packages",
+    command: `sudo apt update && sudo apt upgrade -y`,
+    enabled: isDebianDistro,
+  },
+  {
+    icon: "fedora-symbolic",
+    name: "Update packages",
+    command: `sudo dnf upgrade -y`,
+    enabled: distroID == "fedora",
+  },
+  {
+    icon: "arch-symbolic",
+    name: "Update packages",
+    command: `sudo pacman -Syyu`,
+    enabled: isArchDistro,
+  },
+  {
+    icon: "arch-symbolic",
+    name: "List installed packages",
+    command: `pacman -Qe`,
+    enabled: isArchDistro,
+  },
+  {
+    icon: "arch-symbolic",
+    name: "Remove orphan packages",
+    command: `sudo pacman -R $(pacman -Qdtq)`,
+    enabled: isArchDistro,
+  },
+  {
+    icon: "flatpak-symbolic",
+    name: "Uninstall unused flatpak packages",
+    command: `flatpak uninstall --unused`,
+    enabled: hasFlatpak,
+  },
+];
 
 const personalScripts = [
-    {
-        icon: 'windows-symbolic',
-        name: 'Run Windows VM',
-        command: `/home/d7om/connect-windows.sh`,
-        enabled: true,
-    },
-    {
-        icon: 'resolve-symbolic',
-        name: 'Run Davinci Resolve',
-        command: `/home/d7om/launch_resolve.sh`,
-        enabled: true,
-    },
-]
+  {
+    icon: "windows-symbolic",
+    name: "Run Windows VM",
+    command: `/home/d7om/connect-windows.sh`,
+    enabled: true,
+  },
+  {
+    icon: "resolve-symbolic",
+    name: "Run Davinci Resolve",
+    command: `/home/d7om/launch_resolve.sh`,
+    enabled: true,
+  },
+];
 
-export const PersonalScripts = () => SidebarModule({
-    icon: MaterialIcon('terminal', 'norm'),
-    name: 'Personal scripts',
+export const PersonalScripts = () =>
+  SidebarModule({
+    icon: MaterialIcon("terminal", "norm"),
+    name: "Personal scripts",
     child: Box({
-        vertical: true,
-        className: 'spacing-v-5',
-        children: personalScripts.map((script) => {
-            if (!script.enabled) return null
-            const scriptStateIcon = MaterialIcon('not_started', 'norm')
-            return Box({
-                className: 'spacing-h-5 txt',
-                children: [
-                    Icon({
-                        className: 'sidebar-module-btn-icon txt-large',
-                        icon: script.icon,
-                    }),
-                    Label({
-                        className: 'txt-small',
-                        hpack: 'start',
-                        hexpand: true,
-                        label: script.name,
-                        tooltipText: script.command,
-                    }),
-                    Button({
-                        className: 'sidebar-module-scripts-button',
-                        child: scriptStateIcon,
-                        onClicked: () => {
-                            closeEverything()
-                            execAsync([`bash`, `-c`, `${script.command}`])
-                                .catch(print)
-                                .then(() => {
-                                    scriptStateIcon.label = 'done'
-                                })
-                        },
-                        setup: setupCursorHover,
-                    }),
-                ],
-            })
-        }),
-    })
-});
+      vertical: true,
+      className: "spacing-v-5",
+      children: personalScripts.map((script) => {
+        if (!script.enabled) return null;
+        const scriptStateIcon = MaterialIcon("not_started", "norm");
+        return Box({
+          className: "spacing-h-5 txt",
+          children: [
+            Icon({
+              className: "sidebar-module-btn-icon txt-large",
+              icon: script.icon,
+            }),
+            Label({
+              className: "txt-small",
+              hpack: "start",
+              hexpand: true,
+              label: script.name,
+              tooltipText: script.command,
+            }),
+            Button({
+              className: "sidebar-module-scripts-button",
+              child: scriptStateIcon,
+              onClicked: () => {
+                closeEverything();
+                execAsync([`bash`, `-c`, `${script.command}`])
+                  .catch(print)
+                  .then(() => {
+                    scriptStateIcon.label = "done";
+                  });
+              },
+              setup: setupCursorHover,
+            }),
+          ],
+        });
+      }),
+    }),
+  });
 
-export default () => SidebarModule({
-    icon: MaterialIcon('code', 'norm'),
-    name: 'Quick scripts',
+export default () =>
+  SidebarModule({
+    icon: MaterialIcon("code", "norm"),
+    name: "Quick scripts",
     child: Box({
-        vertical: true,
-        className: 'spacing-v-5',
-        children: scripts.map((script) => {
-            if (!script.enabled) return null
-            const scriptStateIcon = MaterialIcon('not_started', 'norm')
-            return Box({
-                className: 'spacing-h-5 txt',
-                children: [
-                    Icon({
-                        className: 'sidebar-module-btn-icon txt-large',
-                        icon: script.icon,
-                    }),
-                    Label({
-                        className: 'txt-small',
-                        hpack: 'start',
-                        hexpand: true,
-                        label: script.name,
-                        tooltipText: script.command,
-                    }),
-                    Button({
-                        className: 'sidebar-module-scripts-button',
-                        child: scriptStateIcon,
-                        onClicked: () => {
-                            closeEverything()
-                            execAsync([`bash`, `-c`, `${userOptions.apps.terminal} fish -C "${script.command}"`]).catch(print)
-                                .then(() => {
-                                    scriptStateIcon.label = 'done'
-                                })
-                        },
-                        setup: setupCursorHover,
-                    }),
-                ],
-            })
-        }),
-    })
-});
+      vertical: true,
+      className: "spacing-v-5",
+      children: scripts.map((script) => {
+        if (!script.enabled) return null;
+        const scriptStateIcon = MaterialIcon("not_started", "norm");
+        return Box({
+          className: "spacing-h-5 txt",
+          children: [
+            Icon({
+              className: "sidebar-module-btn-icon txt-large",
+              icon: script.icon,
+            }),
+            Label({
+              className: "txt-small",
+              hpack: "start",
+              hexpand: true,
+              label: script.name,
+              tooltipText: script.command,
+            }),
+            Button({
+              className: "sidebar-module-scripts-button",
+              child: scriptStateIcon,
+              onClicked: () => {
+                closeEverything();
+                execAsync([
+                  `bash`,
+                  `-c`,
+                  `${userOptions.apps.terminal} fish -C "${script.command}"`,
+                ])
+                  .catch(print)
+                  .then(() => {
+                    scriptStateIcon.label = "done";
+                  });
+              },
+              setup: setupCursorHover,
+            }),
+          ],
+        });
+      }),
+    }),
+  });

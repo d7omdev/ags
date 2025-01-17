@@ -342,8 +342,13 @@ export default () => {
           child: BarGroup({
             child: musicStuff,
           }),
-          onPrimaryClick: () =>
-            showMusicControls.setValue(!showMusicControls.value),
+          onPrimaryClick: () => {
+            showMusicControls.setValue(!showMusicControls.value);
+            setTimeout(
+              () => showMusicControls.setValue(!showMusicControls.value),
+              5000,
+            );
+          },
           onSecondaryClick: () =>
             execAsync([
               "bash",
