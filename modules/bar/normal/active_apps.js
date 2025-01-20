@@ -3,7 +3,7 @@ import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
 const { Gravity } = imports.gi.Gdk;
 
 const { exec, execAsync } = Utils;
-const { Box, Button, Icon, Menu, MenuItem, Label } = Widget;
+const { Box, Button, Icon, Menu, MenuItem, Label, Overlay } = Widget;
 
 const createContextMenu = (client) =>
   Menu({
@@ -78,38 +78,49 @@ const AppButton = (client) => {
       : client.title);
 
   return Box({
-    child: Button({
-      className: "bar-util-btn bar-active-app",
-      child: Icon({
-        icon: icon,
-        size: 20,
-      }),
-      css: `margin-left: 2px; margin-right: 2px;`,
-      onClicked: () => {
-        exec(`hyprctl dispatch focuswindow address:${client.address}`);
-      },
-      onSecondaryClick: (button) => {
-        const menu = createContextMenu(client);
-        menu.popup_at_widget(button, Gravity.SOUTH, Gravity.NORTH, null);
-      },
-      setup: (self) =>
-        self.hook(Hyprland, (self) => {
-          self.toggleClassName(
-            "focused-app",
-            client.address === Hyprland.active.client.address,
-            (self.tooltipText = tooltipText),
-          );
+    children: [
+      Button({
+        className: "bar-util-btn bar-active-app",
+        child: Icon({
+          icon: icon,
+          size: 20,
         }),
-    }),
+        css: `margin-left: 2px; margin-right: 2px;`,
+        onClicked: () => {
+          exec(`hyprctl dispatch focuswindow address:${client.address}`);
+        },
+        onSecondaryClick: (button) => {
+          const menu = createContextMenu(client);
+          menu.popup_at_widget(button, Gravity.SOUTH, Gravity.NORTH, null);
+        },
+        setup: (self) =>
+          self.hook(Hyprland, (self) => {
+            self.toggleClassName(
+              "focused-app",
+              client.address === Hyprland.active.client.address,
+              (self.tooltipText = tooltipText),
+            );
+          }),
+      }),
+      Overlay({
+        passThrough: true,
+        child: Label({
+          label: client.workspace.id.toString(),
+          className: "txt-smaller txt active-app-label",
+        }),
+      }),
+    ],
   });
 };
 
 export const ActiveApps = (props = {}) => {
   const appsBox = Box({
     vpack: "center",
-    setup: async (self) => {
-      self.hook(Hyprland.active, (box) => {
+    setup: (self) => {
+      const updateAppList = () => {
         const displayGroups = new Map();
+
+        // Group clients by monitor and class
         Hyprland.clients.forEach((client) => {
           if (!displayGroups.has(client.monitor)) {
             displayGroups.set(client.monitor, new Map());
@@ -120,6 +131,7 @@ export const ActiveApps = (props = {}) => {
           }
         });
 
+        // Sort groups and generate buttons
         const sortedDisplayGroups = Array.from(displayGroups.entries()).sort(
           ([monitorA], [monitorB]) => monitorA - monitorB,
         );
@@ -141,8 +153,20 @@ export const ActiveApps = (props = {}) => {
             );
           }
         });
-        box.children = children;
-      });
+
+        // Update the children of the appsBox
+        self.children = children;
+      };
+
+      // Hook into Hyprland events to update the app list dynamically
+      self
+        .hook(Hyprland.active.workspace, updateAppList) // Update on workspace changes
+        .hook(Hyprland.active.client, updateAppList) // Update on client changes
+        .hook(Hyprland, updateAppList, "client-added") // Update when a client is added
+        .hook(Hyprland, updateAppList, "client-removed"); // Update when a client is removed
+
+      // Initial population of the app list
+      updateAppList();
     },
   });
 

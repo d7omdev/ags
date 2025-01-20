@@ -62,6 +62,7 @@ function detectMediaSource(link) {
   if (domain == "discordapp.net") return "󰙯 Discord";
   if (domain == "sndcdn.com") return "󰓀 SoundCloud";
   if (domain == "scdn.co") return "󰓇 Spotify";
+  if (domain == "reddit.com") return " Reddit";
   return domain;
 }
 
