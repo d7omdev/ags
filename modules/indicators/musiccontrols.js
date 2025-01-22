@@ -575,5 +575,10 @@ export default () =>
     setup: (self) =>
       self.hook(showMusicControls, (revealer) => {
         revealer.revealChild = showMusicControls.value;
+        if (showMusicControls.value) {
+          Utils.timeout(10000, () => {
+            showMusicControls.value = false;
+          });
+        }
       }),
   });

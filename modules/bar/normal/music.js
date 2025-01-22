@@ -212,7 +212,7 @@ export default () => {
             mpris = player;
           });
 
-          if (mpris) {
+          if (mpris && mpris.trackTitle) {
             label.label = `${trimTrackTitle(mpris.trackTitle.substring(0, 20))} • ${mpris.trackArtists.join(", ")} `;
           } else label.label = "No media";
         }),
@@ -344,10 +344,6 @@ export default () => {
           }),
           onPrimaryClick: () => {
             showMusicControls.setValue(!showMusicControls.value);
-            setTimeout(
-              () => showMusicControls.setValue(!showMusicControls.value),
-              5000,
-            );
           },
           onSecondaryClick: () =>
             execAsync([
