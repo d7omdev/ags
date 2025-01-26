@@ -35,6 +35,7 @@ import { COMPILED_STYLE_DIR } from "./init.js";
 // ==============================================
 // Configuration
 // ==============================================
+// WARNING: PLease change this to false if you are not using a multi monitor setup or if you are on a laptop
 const useTopMonitor = true; // NOTE: Set to true for top monitor only, false for all monitors
 
 const primaryMonitor = Gdk.Display.get_default()?.get_primary_monitor() || 0;
