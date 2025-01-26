@@ -157,10 +157,10 @@ export const KeystrokeMonitor = () => {
   });
 };
 
-export default (id = 0) =>
+export default (monitor = 0) =>
   Widget.Window({
-    monitor: id,
-    name: `keyvis-${id}`,
+    monitor,
+    name: `keyvis-${monitor}`,
     className: "indicator",
     layer: "overlay",
     anchor: ["bottom", "right"],

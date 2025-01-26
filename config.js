@@ -37,6 +37,8 @@ import { COMPILED_STYLE_DIR } from "./init.js";
 // ==============================================
 const useTopMonitor = true; // NOTE: Set to true for top monitor only, false for all monitors
 
+const primaryMonitor = Gdk.Display.get_default()?.get_primary_monitor() || 0;
+
 // ==============================================
 // Helper Functions
 // ==============================================
@@ -49,7 +51,7 @@ const range = (length, start = 1) =>
  * @returns {Array} - Array of widget instances for all monitors.
  */
 function forMonitors(widget) {
-  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
   return range(n, 0).map(widget).flat(1);
 }
 
@@ -58,7 +60,7 @@ function forMonitors(widget) {
  * @param {Function} widget - The widget function to apply.
  */
 function forMonitorsAsync(widget) {
-  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
   range(n, 0).forEach((n) => widget(n).catch(print));
 }
 
@@ -68,7 +70,7 @@ function forMonitorsAsync(widget) {
  * @returns {Array} - Array containing the widget instance for the top monitor.
  */
 function forTopMonitor(widget) {
-  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
   return n > 0 ? [widget(1)] : []; // Use monitor ID 1 (primary monitor)
 }
 
@@ -77,7 +79,7 @@ function forTopMonitor(widget) {
  * @param {Function} widget - The widget function to apply.
  */
 function forTopMonitorAsync(widget) {
-  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
   if (n > 0) {
     widget(1).catch(print);
   }

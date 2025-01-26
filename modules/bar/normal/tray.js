@@ -19,7 +19,12 @@ export const Tray = (props = {}) => {
     className: "margin-right-5 spacing-h-15",
     setup: (self) =>
       self.hook(SystemTray, (self) => {
-        self.children = SystemTray.items.map(SysTrayItem);
+        const sortedItems = SystemTray.items.sort((a, b) => {
+          if (a.id === "Fcitx") return 1;
+          if (b.id === "Fcitx") return -1;
+          return 0;
+        });
+        self.children = sortedItems.map(SysTrayItem);
         self.show_all();
       }),
   });
