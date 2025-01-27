@@ -30,7 +30,7 @@ menu {
   animation-iteration-count: 1;
 }
 
-menubar>menuitem {
+menubar > menuitem {
   border-radius: 0.545rem;
   -gtk-outline-radius: 0.545rem;
   padding: 0.4em 1.5rem;
@@ -38,7 +38,7 @@ menubar>menuitem {
   min-height: 2.727rem;
 }
 
-menu>menuitem {
+menu > menuitem {
   font-size: 0.955rem;
   font-weight: 600;
   padding: 0.5rem 1.5rem;
@@ -56,15 +56,14 @@ menu>menuitem {
   &:last-child {
     margin-bottom: 0;
   }
-
 }
 
-menu>menuitem:hover,
-menu>menuitem:focus {
+menu > menuitem:hover,
+menu > menuitem:focus {
   background-color: $layer2Hover;
 }
 
-menu>menuitem:active {
+menu > menuitem:active {
   background-color: $layer2Active;
 }
 
@@ -92,16 +91,17 @@ tooltip {
   animation-duration: 100ms;
   animation-timing-function: ease-out;
   animation-iteration-count: 1;
-  @include normal-rounding;
-  background-color: opacify($color: $inverseSurface, $amount: 1);
-  color: $inverseOnSurface;
+  border: 0.068rem solid $outline;
+  border-radius: 0.545rem;
+  background-color: $surfaceContainerHigh;
+  color: $onSurface;
 }
 
 /////////////////////////////////////////
 // Emoji Chooser structure
 // popover
 // ├── box.emoji-searchbar
-// │   ╰── entry.search
+// │   ╰── entry.seach
 // ╰── box.emoji-toolbar
 //     ├── button.image-button.emoji-section
 //     ├── ...
@@ -120,7 +120,6 @@ popover {
   animation-timing-function: ease-out;
   animation-iteration-count: 1;
 }
-
 
 /////////////////////////////////////////
 
@@ -170,17 +169,17 @@ popover {
   border: 0.068rem solid $outline;
 }
 
-.segment-container>*:first-child {
+.segment-container > *:first-child {
   border-top-left-radius: 9999px;
   border-bottom-left-radius: 9999px;
 }
 
-.segment-container>* {
+.segment-container > * {
   border-right: 0.068rem solid $outline;
   padding: 0.341rem 0.682rem;
 }
 
-.segment-container>*:last-child {
+.segment-container > *:last-child {
   border-right: 0rem solid transparent;
   border-top-right-radius: 9999px;
   border-bottom-right-radius: 9999px;
@@ -206,7 +205,8 @@ popover {
   color: $onSecondaryContainer;
 }
 
-.multipleselection-container {}
+.multipleselection-container {
+}
 
 .multipleselection-btn {
   @include small-rounding;
@@ -271,7 +271,7 @@ popover {
   background-color: $surfaceContainerLow;
 }
 
-.tab-btn-active>box>label {
+.tab-btn-active > box > label {
   color: $primary;
 }
 
