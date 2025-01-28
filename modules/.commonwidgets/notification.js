@@ -220,6 +220,20 @@ export default ({ notifObject, isPopup = false, props = {} } = {}) => {
                 label: "Close",
               }),
             }),
+            notifObject["app-name"] === "Hyprshot"
+              ? Button({
+                  hexpand: true,
+                  className: `notif-action notif-action-${notifObject.urgency}`,
+                  onClicked: async () =>
+                    Utils.execAsync(["xdg-open", notifObject.image]).catch(
+                      print,
+                    ),
+                  setup: setupCursorHover,
+                  child: Label({
+                    label: "Open Image",
+                  }),
+                })
+              : null,
             ...notifObject.actions.map((action) =>
               Widget.Button({
                 hexpand: true,
