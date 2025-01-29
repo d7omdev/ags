@@ -52,7 +52,7 @@ const range = (length, start = 1) =>
  * @returns {Array} - Array of widget instances for all monitors.
  */
 function forMonitors(widget) {
-  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
+  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
   return range(n, 0).map(widget).flat(1);
 }
 
@@ -60,9 +60,10 @@ function forMonitors(widget) {
  * Applies a widget to all monitors asynchronously.
  * @param {Function} widget - The widget function to apply.
  */
+
 function forMonitorsAsync(widget) {
-  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
-  range(n, 0).forEach((n) => widget(n).catch(print));
+  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+  return range(n, 0).forEach((n) => widget(n).catch(print));
 }
 
 /**
@@ -120,14 +121,14 @@ const Windows = () => [
   monitorHandler(KeyVis),
 
   // Cheatsheet
-  monitorHandler(Cheatsheet),
+  forMonitors(Cheatsheet),
 
   // Side Panels
   SideLeft(),
   SideRight(),
 
   // Session
-  monitorHandler(Session),
+  forMonitors(Session),
 
   // Dock (if enabled)
   ...(userOptions.dock.enabled ? [monitorHandler(Dock)] : []),
