@@ -112,7 +112,7 @@ export const DesktopEntryButton = (app) => {
   const description = Widget.Label({
     className: "overview-search-results-description txt-smallie margin-left-5",
     label:
-      app.description.length > 50
+      app.description && app.description.length > 50
         ? app.description.substring(0, 50) + "..."
         : app.description,
     truncate: "end",
