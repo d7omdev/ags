@@ -106,13 +106,13 @@ const userConfigOptions = {
   //     engineBaseUrl: "",
   //     excludedSites: [],
   // },
-  // time: {
-  //     format: "",
-  //     interval: null,
-  //     dateFormatLong: "",
-  //     dateInterval: null,
-  //     dateFormat: "",
-  // },
+  time: {
+    format: "%I:%M%P",
+    //     interval: null,
+    //     dateFormatLong: "",
+    //     dateInterval: null,
+    // dateFormat: "",
+  },
   // weather: {
   //     city: "",
   //     preferredUnit: "",
