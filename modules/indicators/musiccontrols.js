@@ -58,6 +58,7 @@ function detectMediaSource(link) {
   }
   let url = link.replace(/(^\w+:|^)\/\//, "");
   let domain = url.match(/(?:[a-z]+\.)?([a-z]+\.[a-z]+)/i)[1];
+  if (domain == null) return null;
   if (domain == "ytimg.com") return "󰗃 Youtube";
   if (domain == "discordapp.net") return "󰙯 Discord";
   if (domain == "sndcdn.com") return "󰓀 SoundCloud";
@@ -427,7 +428,8 @@ const TrackSource = ({ player, ...rest }) =>
             self.hook(
               player,
               (self) => {
-                self.label = detectMediaSource(player.trackCoverUrl);
+                self.label =
+                  detectMediaSource(player.trackCoverUrl) || "No Media";
               },
               "notify::cover-path",
             ),

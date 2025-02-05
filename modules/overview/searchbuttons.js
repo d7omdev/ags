@@ -108,6 +108,24 @@ export const DesktopEntryButton = (app) => {
     transitionDuration: userOptions.animations.durationSmall,
     child: actionText,
   });
+
+  const description = Widget.Label({
+    className: "overview-search-results-description txt-smallie margin-left-5",
+    label:
+      app.description.length > 50
+        ? app.description.substring(0, 50) + "..."
+        : app.description,
+    truncate: "end",
+    maxWidthChars: 1,
+  });
+
+  const descriptionRevealer = Widget.Revealer({
+    revealChild: false,
+    transition: "slide_down",
+    transitionDuration: userOptions.animations.durationSmall,
+    child: description,
+  });
+
   return Widget.Button({
     className: "overview-search-result-btn",
     onClicked: () => {
@@ -117,21 +135,27 @@ export const DesktopEntryButton = (app) => {
     child: Widget.Box({
       children: [
         Widget.Box({
-          vertical: false,
+          vertical: true,
           children: [
             Widget.Box({
-              className: "overview-search-results-icon",
-              homogeneous: true,
-              child: Widget.Icon({
-                icon: app.iconName,
-              }),
+              vertical: false,
+              children: [
+                Widget.Box({
+                  className: "overview-search-results-icon",
+                  homogeneous: true,
+                  child: Widget.Icon({
+                    icon: app.iconName,
+                  }),
+                }),
+                Widget.Label({
+                  className: "overview-search-results-txt txt txt-norm",
+                  label: app.name,
+                }),
+                Widget.Box({ hexpand: true }),
+                actionTextRevealer,
+              ],
             }),
-            Widget.Label({
-              className: "overview-search-results-txt txt txt-norm",
-              label: app.name,
-            }),
-            Widget.Box({ hexpand: true }),
-            actionTextRevealer,
+            descriptionRevealer,
           ],
         }),
       ],
@@ -141,10 +165,12 @@ export const DesktopEntryButton = (app) => {
         .on("focus-in-event", (button) => {
           actionText.revealChild = true;
           actionTextRevealer.revealChild = true;
+          if (app.description) descriptionRevealer.revealChild = true;
         })
         .on("focus-out-event", (button) => {
           actionText.revealChild = false;
           actionTextRevealer.revealChild = false;
+          descriptionRevealer.revealChild = false;
         }),
   });
 };
