@@ -71,13 +71,12 @@ const LangIndicator = (monitor) =>
       child: Widget.Box({
         vertical: true,
         className: "osd-window",
-        css: "min-height: 2px; margin-right: 0.4rem; margin-bottom: 10rem;",
+        css: "min-height: 2px; margin-right: 0.4rem;",
         children: [LanguageIndicator()],
       }),
     }),
   });
 
 const Indicators = [IndicatorWindow, PopupNotifications, LangIndicator];
-// how t oaccess LangIndicator ?
 
 export default Indicators;

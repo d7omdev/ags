@@ -10,7 +10,7 @@ export default () => {
   });
 
   return Widget.Revealer({
-    transition: "slide_up",
+    transition: "slide_down",
     transitionDuration: userOptions.animations.choreographyDelay,
     child: Widget.Box({
       vertical: true,
@@ -20,6 +20,7 @@ export default () => {
         // Widget.Label({ label: "Language", className: "osd-label-big" }),
         langWidget,
       ],
+      css: "margin-bottom: 4rem;",
     }),
     setup: (self) =>
       self.hook(
