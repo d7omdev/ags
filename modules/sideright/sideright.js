@@ -117,7 +117,7 @@ const timeRow = Box({
       },
     }),
     Widget.Box({ hexpand: true }),
-    // ModuleEditIcon({ hpack: 'end' }), // TODO: Make this work
+    // ModuleEditIcon({ hpack: "end" }), // TODO: Make this work
     ModuleReloadIcon({ hpack: "end" }),
     ModuleSettingsIcon({ hpack: "end" }),
     ModulePowerIcon({ hpack: "end" }),
@@ -136,8 +136,6 @@ const togglesBox = Widget.Box({
     await ModuleInvertColors(),
     ModuleIdleInhibitor(),
     await ModuleCloudflareWarp(),
-    // TODO :  Language switcher
-    // ModuleLanguageSwitcher(),
   ],
 });
 

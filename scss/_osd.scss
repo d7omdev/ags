@@ -7,6 +7,21 @@
   min-height: 3.409rem;
 }
 
+/* Larger "Language" label */
+.osd-label-big {
+  font-size: 16px; /* Larger font size */
+  font-weight: 600; /* Bold weight for emphasis */
+  color: #ffffff; /* White text for contrast */
+  margin-bottom: 4px; /* Add spacing between "Language" and the value */
+}
+
+/* Language value */
+.osd-value-txt {
+  font-size: 20px; /* Match the size of brightness/volume values */
+  font-weight: 600; /* Bold weight for readability */
+  color: #ffffff; /* White text for visibility */
+}
+
 .osd-value {
   @include elevation-border;
   @include elevation2;
@@ -14,6 +29,11 @@
   border-radius: 1.023rem;
   padding: 0.625rem 1.023rem;
   padding-top: 0.313rem;
+}
+
+.osd-language {
+  margin-left: 12.625rem;
+  margin-right: 12.625rem;
 }
 
 .osd-progress {

@@ -9,6 +9,7 @@ Gtk.IconTheme.get_default().append_search_path(`${App.configDir}/assets/icons`);
 
 // Global vars for external control (through keybinds)
 export const showMusicControls = Variable(false, {});
+export const currentLang = Variable("");
 export const showColorScheme = Variable(false, {});
 globalThis["openMusicControls"] = showMusicControls;
 globalThis["openColorScheme"] = showColorScheme;

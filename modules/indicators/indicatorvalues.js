@@ -140,7 +140,7 @@ export default (monitor = 0) => {
       self.hook(
         Indicator,
         (revealer, value) => {
-          if (value > -1) revealer.attribute.show();
+          if (value > -1 && value !== 2) revealer.attribute.show();
           else revealer.attribute.hide();
         },
         "popup",
