@@ -7,13 +7,11 @@ export default () => {
   const langWidget = Widget.Label({
     className: "osd-value-txt",
     label: currentLang.bind(),
-    // setup: (self) => self.hook(currentLang, () => {}),
   });
 
-  // Create the popup revealer
   return Widget.Revealer({
-    transition: "slide_down",
-    transitionDuration: userOptions.animations.durationLarge,
+    transition: "slide_up",
+    transitionDuration: userOptions.animations.choreographyDelay,
     child: Widget.Box({
       vertical: true,
       className: "osd-bg osd-value osd-language",

@@ -106,6 +106,16 @@ let configOptions = {
         },
       },
     },
+    quickToggles: {
+      order: [
+        "wifi",
+        "bluetooth",
+        "nightlight",
+        "gamemode",
+        "idleinhibitor",
+        "cloudflarewarp",
+      ],
+    },
     image: {
       columns: 2,
       batchCount: 20,

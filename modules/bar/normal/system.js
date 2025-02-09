@@ -439,7 +439,7 @@ const switchToRelativeWorkspace = async (self, num) => {
       await import("resource:///com/github/Aylur/ags/service/hyprland.js")
     ).default;
     Hyprland.messageAsync(
-      `dispatch workspace ${num > 0 ? "+" : ""}${num}`,
+      `dispatch workspace r${num > 0 ? "+" : ""}${num}`,
     ).catch(print);
   } catch {
     execAsync([

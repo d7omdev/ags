@@ -6,7 +6,7 @@ import ColorScheme from "./colorscheme.js";
 import NotificationPopups from "./notificationpopups.js";
 import LanguageIndicator from "./langindicator.js";
 
-export default (monitor = 0) =>
+const IndicatorWindow = (monitor = 0) =>
   Widget.Window({
     name: `indicator${monitor}`,
     monitor,
@@ -29,13 +29,12 @@ export default (monitor = 0) =>
           MusicControls(),
           // NotificationPopups(),
           ColorScheme(),
-          LanguageIndicator(),
         ],
       }),
     }),
   });
 
-export const PopupNotifications = (monitor = 0) =>
+const PopupNotifications = (monitor = 0) =>
   Widget.Window({
     name: `notificationsindicator${monitor}`,
     monitor,
@@ -56,3 +55,29 @@ export const PopupNotifications = (monitor = 0) =>
       }),
     }),
   });
+
+const LangIndicator = (monitor) =>
+  Widget.Window({
+    name: `notificationsindicator${monitor}`,
+    monitor,
+    className: "indicator",
+    layer: "top",
+    visible: true,
+    anchor: ["bottom"],
+    child: Widget.EventBox({
+      onHover: () => {
+        Indicator.popup(-1);
+      },
+      child: Widget.Box({
+        vertical: true,
+        className: "osd-window",
+        css: "min-height: 2px; margin-right: 0.4rem; margin-bottom: 10rem;",
+        children: [LanguageIndicator()],
+      }),
+    }),
+  });
+
+const Indicators = [IndicatorWindow, PopupNotifications, LangIndicator];
+// how t oaccess LangIndicator ?
+
+export default Indicators;

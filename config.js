@@ -24,7 +24,7 @@ import Cheatsheet from "./modules/cheatsheet/main.js";
 import Dock from "./modules/dock/main.js";
 import Corner from "./modules/screencorners/main.js";
 import Crosshair from "./modules/crosshair/main.js";
-import Indicator, { PopupNotifications } from "./modules/indicators/main.js";
+import Indicators from "./modules/indicators/main.js";
 import KeyVis from "./modules/indicators/keyVis.js";
 import Overview from "./modules/overview/main.js";
 import Session from "./modules/session/main.js";
@@ -116,8 +116,9 @@ const Windows = () => [
   Overview(),
 
   // Indicators
-  monitorHandler(Indicator),
-  monitorHandler(PopupNotifications),
+  Indicators.map((indicator) => monitorHandler(indicator)),
+  // Language Indicator
+  forMonitors(Indicators[2]),
   monitorHandler(KeyVis),
 
   // Cheatsheet
