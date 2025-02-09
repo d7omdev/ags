@@ -1,5 +1,6 @@
 import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import Indicator from "../../services/indicator.js";
+import { MaterialIcon } from "../.commonwidgets/materialicon.js";
 import { currentLang } from "../../variables.js";
 
 export default () => {
@@ -17,7 +18,8 @@ export default () => {
       vertical: true,
       className: "osd-bg osd-value osd-language",
       children: [
-        Widget.Label({ label: "Language", className: "osd-label-big" }),
+        MaterialIcon("translate", "larger"),
+        // Widget.Label({ label: "Language", className: "osd-label-big" }),
         langWidget,
       ],
     }),

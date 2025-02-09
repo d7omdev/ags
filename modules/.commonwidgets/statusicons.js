@@ -290,7 +290,11 @@ const HyprlandXkbKeyboardLayout = async ({ useFlag } = {}) => {
         },
       );
       initLangs = [
-        ...new Set(initLangs.map((lang) => (lang === "ara" ? "ar" : lang))),
+        ...new Set(
+          initLangs.map((lang) =>
+            lang === "ara" ? "ar" : lang === "us" ? "en" : lang,
+          ),
+        ),
       ];
       languageStackArray = Array.from({ length: initLangs.length }, (_, i) => {
         const lang = languages.find((lang) => lang.layout == initLangs[i]);
@@ -332,27 +336,28 @@ const HyprlandXkbKeyboardLayout = async ({ useFlag } = {}) => {
       transitionDuration: userOptions.animations.durationSmall,
       children: widgetKids,
       setup: (self) =>
-        self.hook(
-          Hyprland,
-          (stack, kbName, layoutName) => {
-            if (!kbName) {
-              return;
-            }
-            const matchedLang = languageStackArray.find((lang) =>
-              isLanguageMatch(Object.keys(lang)[0], layoutName),
-            );
-            if (!matchedLang) {
-              stack.shown = "undef";
-            } else {
-              stack.shown = Object.keys(matchedLang)[0];
-              const lang = Object.keys(matchedLang)[0];
-              currentLang.value =
-                lang === "ar" ? "Arabic" : lang === "us" ? "English" : lang;
-              Indicator.popup(2);
-            }
-          },
-          "keyboard-layout",
-        ),
+        self
+          .hook(
+            Hyprland,
+            (stack, kbName, layoutName) => {
+              if (!kbName) {
+                return;
+              }
+              const matchedLang = languageStackArray.find((lang) =>
+                isLanguageMatch(Object.keys(lang)[0], layoutName),
+              );
+              if (!matchedLang) {
+                stack.shown = "undef";
+              } else {
+                stack.shown = Object.keys(matchedLang)[0];
+                const lang = Object.keys(matchedLang)[0];
+                currentLang.value =
+                  lang === "ar" ? "Arabic" : lang === "en" ? "English" : lang;
+              }
+            },
+            "keyboard-layout",
+          )
+          .hook(Hyprland, () => {}, "keyboard-layout"),
     });
     widgetRevealer.child = widgetContent;
     return widgetRevealer;
