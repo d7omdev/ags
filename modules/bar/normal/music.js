@@ -205,10 +205,6 @@ export default () => {
           const players = Mpris.players;
           let mpris = "";
           players.forEach((player) => {
-            if (player.name === "spotify") {
-              mpris = player;
-              return;
-            }
             mpris = player;
           });
 
