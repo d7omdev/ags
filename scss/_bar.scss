@@ -332,7 +332,7 @@ $bar_ws_width_focus_active: 2.045rem;
   padding: 0.341rem;
 }
 
-.bar-space-button > box:first-child {
+.bar-space-button>box:first-child {
   @include full-rounding;
   padding: 0rem 0.682rem;
 }
@@ -343,7 +343,7 @@ $bar_ws_width_focus_active: 2.045rem;
   }
 }
 
-.bar-space-area-rightmost > box {
+.bar-space-area-rightmost>box {
   padding-right: 2.386rem;
 }
 
