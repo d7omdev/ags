@@ -15,6 +15,8 @@ globalThis["openMusicControls"] = showMusicControls;
 globalThis["openColorScheme"] = showColorScheme;
 globalThis["mpris"] = Mpris;
 
+export const showAppTitle = Variable(false, {});
+
 // Mode switching
 export const currentShellMode = Variable("normal", {}); // normal, focus
 globalThis["currentMode"] = currentShellMode;
