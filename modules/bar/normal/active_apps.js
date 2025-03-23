@@ -72,7 +72,7 @@ const AppButton = (client) => {
     client.class +
     " • " +
     (client.title.length > 10
-      ? client.title.slice(0, 10) + "..."
+      ? client.title.slice(0, 30) + "..."
       : client.title);
 
   return EventBox({

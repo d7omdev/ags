@@ -30,8 +30,8 @@ let configOptions = {
     keyboardUseFlag: false, // Use flag emoji instead of abbreviation letters
     layerSmoke: false,
     layerSmokeStrength: 0.2,
-    barRoundCorners: 1, // 0: No, 1: Yes
-    fakeScreenRounding: 1, // 0: None | 1: Always | 2: When not fullscreen
+    barRoundCorners: 0, // 0: No, 1: Yes
+    fakeScreenRounding: 0, // 0: None | 1: Always | 2: When not fullscreen
   },
   apps: {
     bluetooth: "blueberry",
