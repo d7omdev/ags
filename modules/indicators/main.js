@@ -58,7 +58,7 @@ const PopupNotifications = (monitor = 0) =>
 
 const LangIndicator = (monitor) =>
   Widget.Window({
-    name: `notificationsindicator${monitor}`,
+    name: `langindicator${monitor}`,
     monitor,
     className: "indicator",
     layer: "top",

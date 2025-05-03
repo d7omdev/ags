@@ -1,58 +1,110 @@
 #!/usr/bin/env bash
 
-getdate() {
+# Directory to store recordings
+RECORDINGS_DIR="$HOME/Videos/ScreenRecordings"
+
+# Get current date/time for filename
+get_date() {
 	date '+%Y-%m-%d_%H.%M.%S'
 }
-getaudiooutput() {
+
+# Get audio output device
+get_audio_output() {
 	pactl list sources | grep 'Name' | grep 'monitor' | cut -d ' ' -f2
 }
-getactivemonitor() {
+
+# Get the currently active monitor
+get_active_monitor() {
 	hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name'
 }
 
-mkdir -p $HOME/Videos/ScreenRecordings
-cd $HOME/Videos/ScreenRecordings || exit
+# Send notification with optional video open action
+send_notification() {
+	local title="$1"
+	local message="$2"
+	local icon="${3:-video-x-generic}"
+	local urgency="${4:-normal}"
+	local action_file="${5:-}"
 
-# Variable to store the recording file path
-recording_file="$HOME/Videos/ScreenRecordings/recording_$(getdate).mp4"
-
-# Check if wf-recorder is already running (i.e., recording is ongoing)
-if pgrep wf-recorder >/dev/null; then
-	# Stop the recording
-	pkill wf-recorder &
-	# Send notification that recording has stopped with an action to open the video
-	notify-send -a "record-script.sh" \
-		"Recording Stopped" \
-		"Click to open the recorded video." \
-		-i "video" \
-		--action="open_video=Open Video" \
-		&
-
-	# Sleep for a while to give the notification time to show up
-	sleep 1
-
-	# Prompt the user to open the video folder if the action was clicked
-	# We use a simple polling loop to detect the action (no external tools)
-	read -p "Press enter to open the recording folder..." &&
-		xdg-open "$HOME/Videos/ScreenRecordings" &
-	sleep 0.5 &&
-		recent_video=$(ls -t $HOME/Videos/ScreenRecordings | head -n 1) &&
-		xdg-open "$HOME/Videos/ScreenRecordings/$recent_video"
-else
-	# If not already recording, start a new recording
-	notify-send "Starting recording" "recording_$(getdate).mp4" -a 'record-script.sh'
-	sleep 1
-	if [[ "$1" == "--sound" ]]; then
-		wf-recorder --pixel-format yuv420p -f "$recording_file" -t --geometry "$(slurp)" --audio="$(getaudiooutput)" &
-		disown
-	elif [[ "$1" == "--fullscreen-sound" ]]; then
-		wf-recorder -o $(getactivemonitor) --pixel-format yuv420p -f "$recording_file" -t --audio="$(getaudiooutput)" &
-		disown
-	elif [[ "$1" == "--fullscreen" ]]; then
-		wf-recorder -o $(getactivemonitor) --pixel-format yuv420p -f "$recording_file" -t &
-		disown
+	if [[ -n "$action_file" && -f "$action_file" ]]; then
+		if command -v dunstify &>/dev/null; then
+			dunstify -a "Screen Recorder" -u "$urgency" -t 1500 -i "$icon" "$title" "$message" \
+				--action="default,Open Video" \
+				--action="open,Open Video"
+		else
+			notify-send -a "Screen Recorder" -u "$urgency" -t 1500 -i "$icon" "$title" "$message"
+		fi
+		sleep 0.5
+		xdg-open "$action_file" &
 	else
-		wf-recorder --pixel-format yuv420p -f "$recording_file" -t --geometry "$(slurp)" &
-		disown
+		if command -v dunstify &>/dev/null; then
+			dunstify -a "Screen Recorder" -u "$urgency" -t 1500 -i "$icon" "$title" "$message"
+		else
+			notify-send -a "Screen Recorder" -u "$urgency" -t 1500 -i "$icon" "$title" "$message"
+		fi
 	fi
+}
+
+# Create recordings directory if it doesn't exist
+mkdir -p "$RECORDINGS_DIR"
+cd "$RECORDINGS_DIR" || exit 1
+
+# Generate filename with timestamp
+filename="recording_$(get_date).mp4"
+recording_file="$RECORDINGS_DIR/$filename"
+
+# Check if wf-recorder is already running
+if pgrep wf-recorder >/dev/null; then
+	# Stop recording
+	pkill -INT wf-recorder
+
+	# Wait for wf-recorder to finish
+	while pgrep wf-recorder >/dev/null; do
+		sleep 0.1
+	done
+
+	# Give a short delay for file to be properly saved
+	sleep 0.5
+
+	# Find most recent recording
+	recent_video=$(find "$RECORDINGS_DIR" -type f -name "*.mp4" -printf '%T@ %p\n' | sort -n | tail -n 1 | cut -d' ' -f2-)
+	recent_filename=$(basename "$recent_video")
+
+	if [[ -f "$recent_video" ]]; then
+		send_notification "Recording Stopped" "Saved as: $recent_filename" "video-x-generic" "critical" "$recent_video"
+	else
+		send_notification "Recording Error" "Could not find saved recording" "dialog-error" "critical"
+	fi
+else
+	# Start recording
+	send_notification "Starting Recording" "$filename" "video-x-generic" "critical"
+	sleep 0.5
+
+	case "$1" in
+	"--stop")
+		# Do nothing, just in case this is called directly
+		;;
+	"--sound")
+		# Record region with audio
+		wf-recorder --pixel-format yuv420p -f "$recording_file" -t --geometry "$(slurp)" --audio="$(get_audio_output)" &
+		;;
+	"--fullscreen-sound")
+		# Record fullscreen with audio
+		wf-recorder --pixel-format yuv420p -f "$recording_file" -t -o "$(get_active_monitor)" --audio="$(get_audio_output)" &
+		;;
+	"--fullscreen")
+		# Record fullscreen without audio
+		wf-recorder --pixel-format yuv420p -f "$recording_file" -t -o "$(get_active_monitor)" &
+		;;
+	*)
+		# Default: Record region without audio
+		wf-recorder --pixel-format yuv420p -f "$recording_file" -t --geometry "$(slurp)" &
+		;;
+	esac
+
+	# Get PID of recorder and disown it
+	recorder_pid=$!
+	disown "$recorder_pid"
 fi
+
+exit 0

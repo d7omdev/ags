@@ -5,7 +5,7 @@ import { currentLang } from "../../variables.js";
 
 export default () => {
   const langWidget = Widget.Label({
-    className: "osd-value-txt",
+    className: "osd-label-big",
     label: currentLang.bind(),
   });
 
@@ -16,7 +16,7 @@ export default () => {
       vertical: true,
       className: "osd-bg osd-value osd-language",
       children: [
-        MaterialIcon("translate", "larger"),
+        MaterialIcon("translate", "hugerass"),
         // Widget.Label({ label: "Language", className: "osd-label-big" }),
         langWidget,
       ],

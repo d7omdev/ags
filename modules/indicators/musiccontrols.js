@@ -26,10 +26,6 @@ function isRealPlayer(player) {
     !(hasPlasmaIntegration && player.trackTitle.startsWith("Google Meet")) &&
     !(
       hasPlasmaIntegration &&
-      player.busName.startsWith("org.mpris.MediaPlayer2.firefox")
-    ) &&
-    !(
-      hasPlasmaIntegration &&
       player.busName.startsWith("org.mpris.MediaPlayer2.chromium")
     ) &&
     // playerctld just copies other buses and we don't need duplicates

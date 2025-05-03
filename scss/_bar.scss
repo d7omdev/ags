@@ -15,8 +15,8 @@ $bar_ws_width_focus_active: 2.045rem;
 .bar-bg {
   background-color: $layer0;
   min-height: 2.727rem;
-  border-radius: 1rem;
-  margin: 0.2rem 0.4rem;
+  border-radius: 0.75rem;
+  margin: 0.4rem 0.6rem;
 }
 
 .bar-bg-focus {
@@ -432,4 +432,38 @@ $bar_ws_width_focus_active: 2.045rem;
 .active-app-label {
   margin-left: -0.9rem;
   margin-top: 0.5rem;
+}
+
+.recording-indicator {
+  background-color: rgba(204, 0, 0, 0.2);
+  border-radius: 50px;
+}
+
+.recording-box {
+  padding: 0.4rem 0.3rem;
+  margin: 0 0.6rem;
+}
+
+.recording-dot {
+  background-color: red;
+  min-width: 14px;
+  min-height: 14px;
+  border-radius: 50%;
+  margin-right: 0.3rem;
+  animation-name: recording-pulse;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes recording-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }

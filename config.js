@@ -11,14 +11,14 @@ import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
 // Custom Imports
 import userOptions from "./modules/.configuration/user_options.js";
 import {
-    firstRunWelcome,
-    startBatteryWarningService,
+  firstRunWelcome,
+  startBatteryWarningService,
 } from "./services/messages.js";
 import { startAutoDarkModeService } from "./services/darkmode.js";
 import {
-    Bar,
-    BarCornerTopleft,
-    BarCornerTopright,
+  Bar,
+  BarCornerTopleft,
+  BarCornerTopright,
 } from "./modules/bar/main.js";
 import Cheatsheet from "./modules/cheatsheet/main.js";
 import Dock from "./modules/dock/main.js";
@@ -44,7 +44,7 @@ const primaryMonitor = Gdk.Display.get_default()?.get_primary_monitor() || 0;
 // Helper Functions
 // ==============================================
 const range = (length, start = 1) =>
-    Array.from({ length }, (_, i) => i + start);
+  Array.from({ length }, (_, i) => i + start);
 
 /**
  * Applies a widget to all monitors.
@@ -52,8 +52,8 @@ const range = (length, start = 1) =>
  * @returns {Array} - Array of widget instances for all monitors.
  */
 function forMonitors(widget) {
-    const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
-    return range(n, 0).map(widget).flat(1);
+  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+  return range(n, 0).map(widget).flat(1);
 }
 
 /**
@@ -62,8 +62,8 @@ function forMonitors(widget) {
  */
 
 function forMonitorsAsync(widget) {
-    const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
-    return range(n, 0).forEach((n) => widget(n).catch(print));
+  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+  return range(n, 0).forEach((n) => widget(n).catch(print));
 }
 
 /**
@@ -72,8 +72,8 @@ function forMonitorsAsync(widget) {
  * @returns {Array} - Array containing the widget instance for the top monitor.
  */
 function forTopMonitor(widget) {
-    const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
-    return n > 0 ? [widget(1)] : []; // Use monitor ID 1 (primary monitor)
+  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
+  return n > 0 ? [widget(1)] : []; // Use monitor ID 1 (primary monitor)
 }
 
 /**
@@ -81,10 +81,10 @@ function forTopMonitor(widget) {
  * @param {Function} widget - The widget function to apply.
  */
 function forTopMonitorAsync(widget) {
-    const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
-    if (n > 0) {
-        widget(1).catch(print);
-    }
+  const n = Gdk.Display.get_default()?.get_n_monitors() || primaryMonitor;
+  if (n > 0) {
+    widget(1).catch(print);
+  }
 }
 
 /**
@@ -93,7 +93,7 @@ function forTopMonitorAsync(widget) {
  * @returns {Array} - Array of widget instances based on the `useTopMonitor` setting.
  */
 const monitorHandler = (widget) => {
-    return useTopMonitor ? forTopMonitor(widget) : forMonitors(widget);
+  return useTopMonitor ? forTopMonitor(widget) : forMonitors(widget);
 };
 
 // ==============================================
@@ -105,51 +105,50 @@ startAutoDarkModeService().catch(print);
 firstRunWelcome().catch(print);
 startBatteryWarningService().catch(print);
 
-
 // ==============================================
 // Indicator Definitions
 // ==============================================
-Indicators.map((indicator) => monitorHandler(indicator))
+Indicators.map((indicator) => monitorHandler(indicator));
 // Language Indicator
-forMonitors(Indicators[2])
+forMonitors(Indicators[2]);
 
 // ==============================================
 // Window Definitions
 // ==============================================
 const Windows = () => [
-    // Crosshair
-    monitorHandler(Crosshair),
+  // Crosshair
+  monitorHandler(Crosshair),
 
-    // Overview
-    Overview(),
+  // Overview
+  Overview(),
 
-    // monitorHandler(KeyVis),
+  // monitorHandler(KeyVis),
 
-    // Cheatsheet
-    forMonitors(Cheatsheet),
+  // Cheatsheet
+  forMonitors(Cheatsheet),
 
-    // Side Panels
-    SideLeft(),
-    SideRight(),
+  // Side Panels
+  SideLeft(),
+  SideRight(),
 
-    // Session
-    forMonitors(Session),
+  // Session
+  forMonitors(Session),
 
-    // Dock (if enabled)
-    ...(userOptions.dock.enabled ? [monitorHandler(Dock)] : []),
+  // Dock (if enabled)
+  ...(userOptions.dock.enabled ? [monitorHandler(Dock)] : []),
 
-    // Screen Corners (if enabled)
-    ...(userOptions.appearance.fakeScreenRounding !== 0
-        ? [
-            monitorHandler((id) => Corner(id, "bottom left", true)),
-            monitorHandler((id) => Corner(id, "bottom right", true)),
-        ]
-        : []),
+  // Screen Corners (if enabled)
+  ...(userOptions.appearance.fakeScreenRounding !== 0
+    ? [
+        monitorHandler((id) => Corner(id, "bottom left", true)),
+        monitorHandler((id) => Corner(id, "bottom right", true)),
+      ]
+    : []),
 
-    // Bar Corners (if enabled)
-    ...(userOptions.appearance.barRoundCorners
-        ? [monitorHandler(BarCornerTopleft), monitorHandler(BarCornerTopright)]
-        : []),
+  // Bar Corners (if enabled)
+  ...(userOptions.appearance.barRoundCorners
+    ? [monitorHandler(BarCornerTopleft), monitorHandler(BarCornerTopright)]
+    : []),
 ];
 
 // ==============================================
@@ -160,14 +159,14 @@ const closeWindowDelays = {}; // For animations
 
 // Populate closeWindowDelays for animations
 for (let i = 0; i < (Gdk.Display.get_default()?.get_n_monitors() || 1); i++) {
-    closeWindowDelays[`osk${i}`] = CLOSE_ANIM_TIME;
+  closeWindowDelays[`osk${i}`] = CLOSE_ANIM_TIME;
 }
 
 App.config({
-    css: `${COMPILED_STYLE_DIR}/style.css`,
-    stackTraceOnError: true,
-    closeWindowDelay: closeWindowDelays,
-    windows: Windows().flat(1),
+  css: `${COMPILED_STYLE_DIR}/style.css`,
+  stackTraceOnError: true,
+  closeWindowDelay: closeWindowDelays,
+  windows: Windows().flat(1),
 });
 
 // ==============================================
@@ -175,7 +174,7 @@ App.config({
 // ==============================================
 // Initialize bars based on monitor mode
 if (useTopMonitor) {
-    forTopMonitorAsync(Bar);
+  forTopMonitorAsync(Bar);
 } else {
-    forMonitorsAsync(Bar);
+  forMonitorsAsync(Bar);
 }

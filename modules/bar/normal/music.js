@@ -203,10 +203,10 @@ export default () => {
       setup: (self) =>
         self.hook(Mpris, (label) => {
           const players = Mpris.players;
-          let mpris = "";
-          players.forEach((player) => {
-            mpris = player;
-          });
+          let mpris = players[0];
+          // players.forEach((player) => {
+          //   mpris = player;
+          // });
 
           if (mpris && mpris.trackTitle) {
             label.label = `${trimTrackTitle(mpris.trackTitle.substring(0, 20))} • ${mpris.trackArtists.join(", ")} `;

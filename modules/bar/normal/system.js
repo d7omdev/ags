@@ -25,6 +25,7 @@ import {
   WEATHER_SYMBOL,
   NIGHT_WEATHER_SYMBOL,
 } from "../../.commondata/weather.js";
+import { recordingState, recordingIndicator } from "../../../variables.js";
 
 const WEATHER_CACHE_FOLDER = `${GLib.get_user_cache_dir()}/ags/weather`;
 Utils.exec(`mkdir -p ${WEATHER_CACHE_FOLDER}`);
@@ -127,15 +128,236 @@ const clientsClassesButton = () => {
   });
 };
 
-const screenRecorderButton = () => {
-  let menu = null;
-  let recording = false;
+// Format time as MM:SS with leading zeros
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const secs = (seconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${secs}`;
+}
 
-  const runScript = (args) => {
-    const command = `~/.config/ags/scripts/record-script.sh ${args}`;
-    execAsync(["bash", "-c", command])
-      .then(() => print(`Executed: ${command}`))
-      .catch((err) => print(`Error executing ${command}: ${err}`));
+let recording = false;
+
+function updateRecordingTimer() {
+  let timerId = null;
+
+  const startTimer = () => {
+    if (timerId !== null) return;
+
+    recordingState.value = {
+      ...recordingState.value,
+      isRecording: true,
+      startTime: new Date(),
+      elapsedSeconds: 0,
+      formattedTime: "00:00",
+    };
+
+    timerId = Utils.interval(1000, () => {
+      const now = new Date();
+      const elapsedSeconds = Math.floor(
+        (now - recordingState.value.startTime) / 1000,
+      );
+
+      recordingState.value = {
+        ...recordingState.value,
+        elapsedSeconds,
+        formattedTime: formatTime(elapsedSeconds),
+      };
+
+      return true;
+    });
+  };
+
+  const stopTimer = () => {
+    if (timerId !== null) {
+      Utils.timeout(0, () => {
+        Utils.timeout.clearInterval(timerId);
+        timerId = null;
+      });
+
+      recordingState.value = {
+        ...recordingState.value,
+        isRecording: false,
+        formattedTime: "00:00",
+      };
+    }
+  };
+
+  recordingIndicator.connect("changed", () => {
+    if (recordingIndicator.value > 0) {
+      startTimer();
+    } else {
+      stopTimer();
+    }
+  });
+
+  if (recordingIndicator.value > 0) {
+    startTimer();
+  }
+
+  return {
+    start: startTimer,
+    stop: stopTimer,
+  };
+}
+
+const timerController = updateRecordingTimer();
+
+function stopRecording() {
+  const command = `~/.config/ags/scripts/record-script.sh --stop`;
+
+  recording = false;
+  recordingIndicator.value = 0;
+  recordingState.value = {
+    ...recordingState.value,
+    isRecording: false,
+    type: "",
+  };
+
+  timerController.stop();
+
+  updateMenuItems();
+
+  execAsync(["bash", "-c", command])
+    .then(() => {
+      print(`Executed: ${command}`);
+    })
+    .catch((err) => {
+      print(`Error executing ${command}: ${err}`);
+      Utils.notify({
+        summary: "Recording Error",
+        body: `Failed to stop recording: ${err}`,
+        urgency: "critical",
+      });
+    });
+}
+
+function startRecording(args, type) {
+  const command = `~/.config/ags/scripts/record-script.sh ${args}`;
+
+  recording = true;
+  recordingIndicator.value = 1;
+  recordingState.value = {
+    ...recordingState.value,
+    isRecording: true,
+    type: type,
+  };
+
+  timerController.start();
+
+  updateMenuItems();
+
+  execAsync(["bash", "-c", command])
+    .then(() => {
+      print(`Executed: ${command}`);
+    })
+    .catch((err) => {
+      print(`Error executing ${command}: ${err}`);
+
+      recording = false;
+      recordingIndicator.value = 0;
+      recordingState.value = {
+        ...recordingState.value,
+        isRecording: false,
+        type: "",
+      };
+
+      Utils.notify({
+        summary: "Recording Error",
+        body: `Failed to start recording: ${err}`,
+        urgency: "critical",
+      });
+    });
+}
+
+let menu = null;
+let menuItems = [];
+
+function updateMenuItems() {
+  if (!menuItems.length || !menu) return;
+
+  menuItems.forEach((item) => {
+    if (recording && recordingState.value.type === item.type) {
+      item.element.child.label = `${item.label} ${item.icon ? item.icon : ""}  🔴`;
+    } else {
+      // Not the active recording
+      item.element.child.label = item.icon
+        ? `${item.label} ${item.icon}`
+        : item.label;
+    }
+  });
+}
+
+const RecIndicator = () =>
+  Box({
+    className: "recording-indicator",
+    visible: recordingIndicator.value > 0,
+    setup: (self) => {
+      self.hook(recordingIndicator, () => {
+        self.visible = recordingIndicator.value > 0;
+      });
+    },
+    children: [
+      EventBox({
+        onPrimaryClick: () => {
+          if (recording && recordingIndicator.value > 0) {
+            stopRecording();
+          }
+        },
+        child: Box({
+          className: "recording-box",
+          children: [
+            Box({
+              className: "recording-dot",
+              vpack: "center",
+              hpack: "center",
+            }),
+            Label({
+              className: "recording-indicator-label",
+              setup: (self) => {
+                self.hook(recordingState, () => {
+                  if (recordingState.value.isRecording) {
+                    self.label = `${recordingState.value.formattedTime}`;
+                  } else {
+                    self.label = "Recording";
+                  }
+                });
+              },
+            }),
+          ],
+        }),
+      }),
+    ],
+  });
+
+const screenRecorderButton = () => {
+  const createRecordMenuItem = (label, args, icon = "") => {
+    const recordingType = label.toLowerCase().replace("record ", "");
+
+    const menuItem = MenuItem({
+      child: Label(icon ? `${label} ${icon}` : label),
+      onActivate: () => {
+        if (recording) {
+          stopRecording();
+        } else {
+          startRecording(args, recordingType);
+        }
+
+        if (menu) {
+          menu.popdown();
+        }
+      },
+    });
+
+    menuItems.push({
+      element: menuItem,
+      label: label,
+      icon: icon,
+      type: recordingType,
+    });
+
+    return menuItem;
   };
 
   const button = UtilButton({
@@ -143,44 +365,25 @@ const screenRecorderButton = () => {
     icon: "screen_record",
     onClicked: (button) => {
       if (!menu) {
+        menuItems = [];
         menu = Menu({
           className: "menu",
           children: [
-            MenuItem({
-              child: Label("Record region"),
-              onActivate: (self) => {
-                runScript("");
-                recording = !recording;
-                self.child.label = recording
-                  ? "Recording region 🔴"
-                  : "Record region";
-              },
-            }),
-            MenuItem({
-              child: Label("Record full screen 󰝟 "),
-              onActivate: (self) => {
-                runScript("--fullscreen");
-                recording = !recording;
-                self.child.label = recording
-                  ? "Recording screen 🔴"
-                  : "Record full screen 󰝟 ";
-              },
-            }),
-            MenuItem({
-              child: Label("Record full screen  "),
-              onActivate: (self) => {
-                runScript("--fullscreen-sound");
-                recording = !recording;
-                self.child.label = recording
-                  ? "Recording screen   🔴"
-                  : "Record full screen  ";
-              },
-            }),
+            createRecordMenuItem("Record region", ""),
+            createRecordMenuItem("Record full screen ", "--fullscreen", "🔈"),
+            createRecordMenuItem(
+              "Record full screen ",
+              "--fullscreen-sound",
+              "🔊",
+            ),
           ],
         });
       }
 
+      updateMenuItems();
+
       try {
+        // Position and display menu
         menu.rect_anchor_dy = 8;
         menu.popup_at_widget(
           button,
@@ -190,6 +393,11 @@ const screenRecorderButton = () => {
         );
       } catch (error) {
         print(`Error showing menu: ${error}`);
+        Utils.notify({
+          summary: "Menu Error",
+          body: `Could not show recording menu: ${error}`,
+          urgency: "normal",
+        });
       }
     },
   });
@@ -286,6 +494,7 @@ export const BarGroup = ({ child }) =>
       }),
     ],
   });
+
 function isNightTime() {
   const currentHour = new Date().getHours();
   return currentHour < 6 || currentHour > 18;
@@ -331,6 +540,7 @@ const BatteryModule = () =>
             box.visible = !Battery.charged;
           }),
       }),
+
       BarGroup({
         child: Box({
           hexpand: false,
@@ -450,12 +660,20 @@ const switchToRelativeWorkspace = async (self, num) => {
 };
 
 export default () =>
-  Widget.EventBox({
-    onScrollUp: (self) => switchToRelativeWorkspace(self, -1),
-    onScrollDown: (self) => switchToRelativeWorkspace(self, +1),
-    onPrimaryClick: () => App.toggleWindow("sideright"),
-    child: Widget.Box({
-      className: "spacing-h-4",
-      children: [BarGroup({ child: BarClock() }), BatteryModule()],
-    }),
+  Box({
+    children: [
+      Widget.EventBox({
+        onScrollUp: (self) => switchToRelativeWorkspace(self, -1),
+        onScrollDown: (self) => switchToRelativeWorkspace(self, +1),
+        onPrimaryClick: () => App.toggleWindow("sideright"),
+        child: Widget.Box({
+          className: "spacing-h-4",
+          children: [BarGroup({ child: BarClock() }), BatteryModule()],
+        }),
+      }),
+      Widget.Box({
+        className: "spacing-h-4",
+        children: [BarGroup({ child: RecIndicator() })],
+      }),
+    ],
   });

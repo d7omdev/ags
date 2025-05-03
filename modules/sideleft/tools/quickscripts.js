@@ -73,12 +73,18 @@ const personalScripts = [
     icon: "windows-symbolic",
     name: "Run Windows VM",
     command: `/home/d7om/connect-windows.sh`,
-    enabled: true,
+    enabled: false,
   },
   {
     icon: "resolve-symbolic",
     name: "Run Davinci Resolve",
     command: `/home/d7om/launch_resolve.sh`,
+    enabled: false,
+  },
+  {
+    icon: "figma-linux",
+    name: "Launch Figma",
+    command: `~/launch_figma.sh`,
     enabled: true,
   },
 ];
