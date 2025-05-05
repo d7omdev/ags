@@ -244,7 +244,20 @@ function startRecording(args, type) {
     type: type,
   };
 
-  timerController.start();
+  if (args) {
+    recordingState.value = {
+      ...recordingState.value,
+      isRecording: true,
+      type: type,
+    };
+    timerController.start();
+  } else {
+    recordingState.value = {
+      ...recordingState.value,
+      isRecording: false,
+      type: type,
+    };
+  }
 
   updateMenuItems();
 
