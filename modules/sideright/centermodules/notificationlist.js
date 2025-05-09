@@ -115,6 +115,17 @@ export default (props) => {
   //         Notifications.dnd = newValue;
   //     },
   // })
+  const clearFn = () => {
+    Notifications.clear();
+    const kids = notificationList.get_children();
+    for (let i = 0; i < kids.length; i++) {
+      const kid = kids[i];
+      Utils.timeout(userOptions.animations.choreographyDelay * i, () =>
+        kid.attribute.destroyWithAnims(),
+      );
+    }
+  };
+  globalThis["clearNotifications"] = clearFn;
   const clearButton = Revealer({
     transition: "slide_right",
     transitionDuration: userOptions.animations.durationSmall,
@@ -122,16 +133,7 @@ export default (props) => {
       self.hook(Notifications, (self) => {
         self.revealChild = Notifications.notifications.length > 0;
       }),
-    child: ListActionButton("clear_all", "Clear", () => {
-      Notifications.clear();
-      const kids = notificationList.get_children();
-      for (let i = 0; i < kids.length; i++) {
-        const kid = kids[i];
-        Utils.timeout(userOptions.animations.choreographyDelay * i, () =>
-          kid.attribute.destroyWithAnims(),
-        );
-      }
-    }),
+    child: ListActionButton("clear_all", "Clear", clearFn),
   });
   const notifCount = Label({
     attribute: {
