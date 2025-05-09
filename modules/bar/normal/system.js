@@ -685,8 +685,12 @@ export default () =>
         }),
       }),
       Widget.Box({
-        className: "spacing-h-4",
-        children: [BarGroup({ child: RecIndicator() })],
+        children: [RecIndicator()],
+        setup: (self) => {
+          self.hook(recordingState, () => {
+            self.visible = recordingState.value.isRecording;
+          });
+        },
       }),
     ],
   });

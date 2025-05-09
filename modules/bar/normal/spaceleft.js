@@ -96,8 +96,6 @@ export default async (monitor = 0) => {
               hexpand: true,
               children: [
                 Widget.Box({
-                  vertical: true,
-                  className: "bar-space-button",
                   children: [ActiveApps()],
                 }),
               ],

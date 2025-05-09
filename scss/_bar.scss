@@ -41,6 +41,10 @@ $bar_ws_width_focus_active: 2.045rem;
   padding: 0.273rem 0rem;
 }
 
+.bar-apps-margin {
+  padding: 0.173rem 0rem;
+}
+
 .bar-group {
   background-color: $layer1;
 }
@@ -435,6 +439,7 @@ $bar_ws_width_focus_active: 2.045rem;
 }
 
 .recording-indicator {
+  margin: 0.4rem 0.6rem;
   background-color: rgba(204, 0, 0, 0.2);
   border-radius: 50px;
 }

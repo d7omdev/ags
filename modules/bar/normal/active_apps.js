@@ -1,8 +1,10 @@
 import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
 const { Gravity } = imports.gi.Gdk;
+const Gtk = imports.gi.Gtk;
 const { exec, execAsync } = Utils;
 const { Box, Button, Icon, Menu, MenuItem, Label, Overlay, EventBox } = Widget;
+import { substitute } from "../../.miscutils/icons.js";
 
 const createContextMenu = (client) =>
   Menu({
@@ -55,16 +57,13 @@ const createContextMenu = (client) =>
     },
   });
 
-const activeAppClass = await execAsync(["hyprctl", "activewindow"]).then(
-  (out) => {
-    const regex = /initialClass:\s*(\S+)/;
-    const match = out.match(regex);
-    return match ? match[1] : "initialClass not found";
-  },
-);
+function getValidIcon(iconName) {
+  const theme = Gtk.IconTheme.get_default();
+  return theme.has_icon(iconName) ? iconName : substitute(iconName);
+}
 
 const AppButton = (client) => {
-  const iconName = client.class.toLowerCase();
+  const iconName = getValidIcon(client.class);
   const workspaceID = client.workspace.id.toString();
   const tooltipText =
     client.class +
@@ -78,12 +77,10 @@ const AppButton = (client) => {
       children: [
         Button({
           className: "bar-util-btn bar-active-app",
-          // Notice we use "tooltip-text" (with a hyphen) here
           "tooltip-text": tooltipText,
           child: Icon({
             icon: iconName,
             size: 20,
-            // Also update the icon tooltip property
             "tooltip-text": tooltipText,
           }),
           css: `margin-left: 2px; margin-right: 2px;`,
