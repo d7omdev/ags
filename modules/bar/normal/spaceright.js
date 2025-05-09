@@ -8,10 +8,13 @@ const { execAsync } = Utils;
 import Indicator from "../../../services/indicator.js";
 import { StatusIcons } from "../../.commonwidgets/statusicons.js";
 import { Tray } from "./tray.js";
+import { distance } from "../../.miscutils/mathfuncs.js";
+
+const OSD_DISMISS_DISTANCE = 10;
 
 const SeparatorDot = () =>
   Widget.Revealer({
-    transition: "slide_right",
+    transition: "slide_left",
     revealChild: false,
     attribute: {
       count: SystemTray.items.length,
@@ -30,18 +33,21 @@ const SeparatorDot = () =>
         .hook(SystemTray, (self) => self.attribute.update(self, -1), "removed"),
   });
 
-export default () => {
+export default (monitor = 0) => {
   const barTray = Tray();
-  const barStatusIcons = StatusIcons({
-    className: "bar-statusicons",
-    setup: (self) =>
-      self.hook(App, (self, currentName, visible) => {
-        if (currentName === "sideright") {
-          self.toggleClassName("bar-statusicons-active", visible);
-        }
-      }),
-  });
-  const SpaceRightDefaultClicks = (child) =>
+  const barStatusIcons = StatusIcons(
+    {
+      className: "bar-statusicons",
+      setup: (self) =>
+        self.hook(App, (self, currentName, visible) => {
+          if (currentName === "sideright") {
+            self.toggleClassName("bar-statusicons-active", visible);
+          }
+        }),
+    },
+    monitor,
+  );
+  const SpaceRightInteractions = (child) =>
     Widget.EventBox({
       onHover: () => {
         barStatusIcons.toggleClassName("bar-statusicons-hover", true);
@@ -58,14 +64,18 @@ export default () => {
         ]).catch(print),
       onMiddleClick: () => execAsync("playerctl play-pause").catch(print),
       setup: (self) =>
-        self.on("button-press-event", (self, event) => {
-          if (event.get_button()[1] === 8)
-            execAsync("playerctl previous").catch(print);
-        }),
+        self
+          .on("button-press-event", (self, event) => {
+            if (event.get_button()[1] === 8)
+              execAsync("playerctl previous").catch(print);
+          })
+          .on("motion-notify-event", (self, event) => {
+            Indicator.popup(-1);
+          }),
       child: child,
     });
-  const emptyArea = SpaceRightDefaultClicks(Widget.Box({ hexpand: true }));
-  const indicatorArea = SpaceRightDefaultClicks(
+  const emptyArea = SpaceRightInteractions(Widget.Box({ hexpand: true }));
+  const indicatorArea = SpaceRightInteractions(
     Widget.Box({
       children: [SeparatorDot(), barStatusIcons],
     }),
@@ -76,26 +86,39 @@ export default () => {
     children: [emptyArea, barTray, indicatorArea],
   });
 
+  let scrollCursorX, scrollCursorY;
   return Widget.EventBox({
-    onScrollUp: () => {
+    onScrollUp: (self, event) => {
       if (!Audio.speaker) return;
+      let _;
+      [_, scrollCursorX, scrollCursorY] = event.get_coords();
       if (Audio.speaker.volume <= 0.09) Audio.speaker.volume += 0.01;
-      else Audio.speaker.volume += 0.05;
+      else Audio.speaker.volume += 0.03;
       Indicator.popup(1);
     },
-    onScrollDown: () => {
+    onScrollDown: (self, event) => {
       if (!Audio.speaker) return;
+      let _;
+      [_, scrollCursorX, scrollCursorY] = event.get_coords();
       if (Audio.speaker.volume <= 0.09) Audio.speaker.volume -= 0.01;
-      else Audio.speaker.volume -= 0.05;
+      else Audio.speaker.volume -= 0.03;
       Indicator.popup(1);
     },
+    setup: (self) =>
+      self.on("motion-notify-event", (self, event) => {
+        const [_, cursorX, cursorY] = event.get_coords();
+        if (
+          distance(cursorX, cursorY, scrollCursorX, scrollCursorY) >=
+          OSD_DISMISS_DISTANCE
+        )
+          Indicator.popup(-1);
+      }),
     child: Widget.Box({
       children: [
         actualContent,
-        SpaceRightDefaultClicks(
-          Widget.Box({ className: "bar-corner-spacing" }),
-        ),
+        SpaceRightInteractions(Widget.Box({ className: "bar-corner-spacing" })),
       ],
     }),
   });
 };
+

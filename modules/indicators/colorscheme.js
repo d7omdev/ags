@@ -78,22 +78,22 @@ function calculateSchemeInitIndex(optionsArr, searchValue = 'vibrant') {
 
 const schemeOptionsArr = [
     [
-        { name: 'Tonal Spot', value: 'tonalspot' },
-        { name: 'Fruit Salad', value: 'fruitsalad' },
-        { name: 'Fidelity', value: 'fidelity' },
-        { name: 'Rainbow', value: 'rainbow' },
+        { name: getString('Tonal Spot'), value: 'tonalspot' },
+        { name: getString('Fruit Salad'), value: 'fruitsalad' },
+        { name: getString('Fidelity'), value: 'fidelity' },
+        { name: getString('Rainbow'), value: 'rainbow' },
     ],
     [
-        { name: 'Neutral', value: 'neutral' },
-        { name: 'Monochrome', value: 'monochrome' },
-        { name: 'Expressive', value: 'expressive' },
-        { name: 'Vibrant', value: 'vibrant' },
+        { name: getString('Neutral'), value: 'neutral' },
+        { name: getString('Monochrome'), value: 'monochrome' },
+        { name: getString('Expressive'), value: 'expressive' },
+        { name: getString('Vibrant'), value: 'vibrant' },
     ],
     [
-        { name: 'Vibrant+', value: 'morevibrant' },
+        { name: getString('Vibrant+'), value: 'morevibrant' },
     ],
     //[
-    //  { name: 'Content', value: 'content' },
+    //  { name: getString('Content'), value: 'content' },
     //]
 ];
 
@@ -104,7 +104,7 @@ const initScheme = Utils.exec(`bash -c "sed -n \'3p\' ${LIGHTDARK_FILE_LOCATION}
 const initSchemeIndex = calculateSchemeInitIndex(schemeOptionsArr, initScheme);
 
 const ColorSchemeSettings = () => Widget.Box({
-    className: 'osd-colorscheme-settings spacing-v-5',
+    className: 'osd-colorscheme-settings spacing-v-5 margin-20',
     vertical: true,
     vpack: 'center',
     children: [
@@ -114,26 +114,26 @@ const ColorSchemeSettings = () => Widget.Box({
                 Widget.Label({
                     xalign: 0,
                     className: 'txt-norm titlefont txt',
-                    label: 'Options',
+                    label: getString('Options'),
                     hpack: 'center',
                 }),
                 //////////////////
                 ConfigToggle({
                     icon: 'dark_mode',
-                    name: 'Dark Mode',
-                    desc: 'Ya should go to sleep!',
+                    name: getString('Dark Mode'),
+                    desc: getString('Ya should go to sleep!'),
                     initValue: darkMode.value,
                     onChange: (_, newValue) => {
                         darkMode.value = !!newValue;
                     },
                     extraSetup: (self) => self.hook(darkMode, (self) => {
-                        self.enabled.value = darkMode.value;
+                        self.attribute.enabled.value = darkMode.value;
                     }),
                 }),
                 ConfigToggle({
                     icon: 'border_clear',
-                    name: 'Transparency',
-                    desc: 'Make shell elements transparent',
+                    name: getString('Transparency'),
+                    desc: getString('Make shell elements transparent'),
                     initValue: initTransparencyVal,
                     onChange: (self, newValue) => {
                         let transparency = newValue == 0 ? "opaque" : "transparent";
@@ -151,7 +151,7 @@ const ColorSchemeSettings = () => Widget.Box({
                 Widget.Label({
                     xalign: 0,
                     className: 'txt-norm titlefont txt margin-top-5',
-                    label: 'Scheme styles',
+                    label: getString('Scheme styles'),
                     hpack: 'center',
                 }),
                 //////////////////
@@ -179,7 +179,7 @@ const ColorschemeContent = () => Widget.Box({
         Widget.Label({
             xalign: 0,
             className: 'txt-norm titlefont txt',
-            label: 'Color scheme',
+            label: getString('Color scheme'),
             hpack: 'center',
         }),
         Widget.Box({

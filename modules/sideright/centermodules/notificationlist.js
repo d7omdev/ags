@@ -10,6 +10,9 @@ import Notification from "../../.commonwidgets/notification.js";
 import { ConfigToggle } from "../../.commonwidgets/configwidgets.js";
 
 export default (props) => {
+  let previousLength;
+  let clearing = false;
+
   const notifEmptyContent = Box({
     homogeneous: true,
     children: [
@@ -23,7 +26,10 @@ export default (props) => {
             className: "spacing-v-5 txt-subtext",
             children: [
               MaterialIcon("notifications_active", "gigantic"),
-              Label({ label: "No notifications", className: "txt-small" }),
+              Label({
+                label: getString("No notifications"),
+                className: "txt-small",
+              }),
             ],
           }),
         ],
@@ -100,21 +106,12 @@ export default (props) => {
     });
   const silenceButton = ListActionButton(
     "notifications_paused",
-    "Silence",
+    getString("Silence"),
     (self) => {
       Notifications.dnd = !Notifications.dnd;
       self.toggleClassName("notif-listaction-btn-enabled", Notifications.dnd);
     },
   );
-  // const silenceToggle = ConfigToggle({
-  //     expandWidget: false,
-  //     icon: 'do_not_disturb_on',
-  //     name: 'Do Not Disturb',
-  //     initValue: false,
-  //     onChange: (self, newValue) => {
-  //         Notifications.dnd = newValue;
-  //     },
-  // })
   const clearFn = () => {
     Notifications.clear();
     const kids = notificationList.get_children();
@@ -139,7 +136,7 @@ export default (props) => {
     attribute: {
       updateCount: (self) => {
         const count = Notifications.notifications.length;
-        if (count > 0) self.label = `${count} notifications`;
+        if (count > 0) self.label = `${count} ${getString("notifications")}`;
         else self.label = "";
       },
     },
@@ -168,13 +165,7 @@ export default (props) => {
   const listTitle = Box({
     vpack: "start",
     className: "txt spacing-h-5",
-    children: [
-      notifCount,
-      silenceButton,
-      // silenceToggle,
-      // Box({ hexpand: true }),
-      clearButton,
-    ],
+    children: [notifCount, silenceButton, clearButton],
   });
   const notifList = Scrollable({
     hexpand: true,
@@ -197,10 +188,23 @@ export default (props) => {
       empty: notifEmptyContent,
       list: notifList,
     },
-    setup: (self) =>
+    setup: (self) => {
+      previousLength = Notifications.notifications.length;
       self.hook(Notifications, (self) => {
-        self.shown = Notifications.notifications.length > 0 ? "list" : "empty";
-      }),
+        if (Notifications.notifications.length > 0) {
+          self.shown = "list";
+          if (!clearing) previousLength = Notifications.notifications.length;
+        } else {
+          Utils.timeout(
+            userOptions.animations.choreographyDelay * previousLength,
+            () => {
+              clearing = false;
+              if (Notifications.notifications.length == 0) self.shown = "empty";
+            },
+          );
+        }
+      });
+    },
   });
   return Box({
     ...props,

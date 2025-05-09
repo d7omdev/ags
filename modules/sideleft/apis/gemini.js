@@ -1,5 +1,4 @@
 const { Gtk } = imports.gi;
-import App from 'resource:///com/github/Aylur/ags/app.js';
 import Widget from 'resource:///com/github/Aylur/ags/widget.js';
 import * as Utils from 'resource:///com/github/Aylur/ags/utils.js';
 
@@ -10,7 +9,7 @@ import { SystemMessage, ChatMessage } from "./ai_chatmessage.js";
 import { ConfigToggle, ConfigSegmentedSelection, ConfigGap } from '../../.commonwidgets/configwidgets.js';
 import { markdownTest } from '../../.miscutils/md2pango.js';
 import { MarginRevealer } from '../../.widgethacks/advancedrevealers.js';
-import { chatEntry } from '../apiwidgets.js';
+import { AgsToggle } from '../../.commonwidgets/configwidgets_apps.js';
 
 const MODEL_NAME = `Gemini`;
 
@@ -34,7 +33,7 @@ const GeminiInfo = () => {
                 className: 'txt txt-title-small sidebar-chat-welcome-txt',
                 wrap: true,
                 justify: Gtk.Justification.CENTER,
-                label: 'Assistant (Gemini)',
+                label: `Assistant (Gemini)`,
             }),
             Box({
                 className: 'spacing-h-5',
@@ -44,12 +43,12 @@ const GeminiInfo = () => {
                         className: 'txt-smallie txt-subtext',
                         wrap: true,
                         justify: Gtk.Justification.CENTER,
-                        label: 'Powered by Google',
+                        label: getString('Powered by Google'),
                     }),
                     Button({
                         className: 'txt-subtext txt-norm icon-material',
                         label: 'info',
-                        tooltipText: 'Uses gemini-pro.\nNot affiliated, endorsed, or sponsored by Google.\n\nPrivacy: Chat messages aren\'t linked to your account,\n    but will be read by human reviewers to improve the model.',
+                        tooltipText: getString("Not affiliated, endorsed, or sponsored by Google.\n\nPrivacy: Chat messages aren't linked to your account,\nbut will be read by human reviewers to improve the model."),
                         setup: setupCursorHoverInfo,
                     }),
                 ]
@@ -77,13 +76,13 @@ export const GeminiSettings = () => MarginRevealer({
                 hpack: 'center',
                 icon: 'casino',
                 name: 'Randomness',
-                desc: 'Gemini\'s temperature value.\n  Precise = 0\n  Balanced = 0.5\n  Creative = 1',
+                desc: getString("Gemini's temperature value.\n  Precise = 0\n  Balanced = 0.5\n  Creative = 1"),
                 options: [
-                    { value: 0.00, name: 'Precise', },
-                    { value: 0.50, name: 'Balanced', },
-                    { value: 1.00, name: 'Creative', },
+                    { value: 0.00, name: getString('Precise'), },
+                    { value: 0.50, name: getString('Balanced'), },
+                    { value: 1.00, name: getString('Creative'), },
                 ],
-                initIndex: 2,
+                initIndex: 1,
                 onChange: (value, name) => {
                     GeminiService.temperature = value;
                 },
@@ -91,36 +90,45 @@ export const GeminiSettings = () => MarginRevealer({
             ConfigGap({ vertical: true, size: 10 }), // Note: size can only be 5, 10, or 15
             Box({
                 vertical: true,
-                hpack: 'fill',
+                hpack: 'center',
                 className: 'sidebar-chat-settings-toggles',
                 children: [
-                    ConfigToggle({
+                    AgsToggle({
                         icon: 'model_training',
-                        name: 'Enhancements',
-                        desc: 'Tells Gemini:\n- It\'s a Linux sidebar assistant\n- Be brief and use bullet points',
-                        initValue: GeminiService.assistantPrompt,
-                        onChange: (self, newValue) => {
+                        name: getString('Prompt'),
+                        desc: getString("Tells Gemini:\n- It's a Linux sidebar assistant\n- Be brief and use bullet points"),
+                        option: "ai.enhancements",
+                        extraOnChange: (self, newValue) => {
                             GeminiService.assistantPrompt = newValue;
                         },
+                        extraOnReset: (self, newValue) => {
+                            GeminiService.assistantPrompt = userOptions.ai.enhancements;
+                        },
                     }),
-                    ConfigToggle({
+                    AgsToggle({
                         icon: 'shield',
-                        name: 'Safety',
-                        desc: 'When turned off, tells the API (not the model) \nto not block harmful/explicit content',
-                        initValue: GeminiService.safe,
-                        onChange: (self, newValue) => {
+                        name: getString('Safety'),
+                        desc: getString("When turned off, tells the API (not the model) \nto not block harmful/explicit content"),
+                        option: "ai.safety",
+                        extraOnChange: (self, newValue) => {
                             GeminiService.safe = newValue;
                         },
-                    }),
-                    ConfigToggle({
-                        icon: 'history',
-                        name: 'History',
-                        desc: 'Saves chat history\nMessages in previous chats won\'t show automatically, but they are there',
-                        initValue: GeminiService.useHistory,
-                        onChange: (self, newValue) => {
-                            GeminiService.useHistory = newValue;
+                        extraOnReset: (self, newValue) => {
+                            GeminiService.safe = userOptions.ai.safety;
                         },
                     }),
+                    AgsToggle({
+                        icon: 'history',
+                        name: getString('History'),
+                        desc: getString("Saves chat history\nMessages in previous chats won't show automatically, but they are there"),
+                        option: "ai.useHistory",
+                        extraOnChange: (self, newValue) => {
+                            GeminiService.useHistory = newValue;
+                        },
+                        extraOnReset: (self, newValue) => {
+                            GeminiService.useHistory = userOptions.ai.useHistory;
+                        },
+                    })
                 ]
             })
         ]
@@ -158,7 +166,7 @@ const geminiWelcome = Box({
     vexpand: true,
     homogeneous: true,
     child: Box({
-        className: 'spacing-v-15',
+        className: 'spacing-v-15 margin-top-15 margin-bottom-15',
         vpack: 'center',
         vertical: true,
         children: [
@@ -212,7 +220,7 @@ export const sendMessage = (text) => {
     if (text.length == 0) return;
     if (GeminiService.key.length == 0) {
         GeminiService.key = text;
-        chatContent.add(SystemMessage(`Key saved to\n\`${GeminiService.keyPath}\``, 'API Key', geminiView));
+        chatContent.add(SystemMessage(`Key saved to \`${GeminiService.keyPath}\`\nUpdate anytime with /key YOUR_API_KEY.`, 'API Key', GeminiView));
         text = '';
         return;
     }
@@ -223,12 +231,12 @@ export const sendMessage = (text) => {
             clearChat();
             GeminiService.loadHistory();
         }
-        else if (text.startsWith('/model')) chatContent.add(SystemMessage(`Currently using \`${GeminiService.modelName}\``, '/model', geminiView))
+        else if (text.startsWith('/model')) chatContent.add(SystemMessage(`${getString("Currently using")} \`${GeminiService.modelName}\``, '/model', GeminiView))
         else if (text.startsWith('/prompt')) {
             const firstSpaceIndex = text.indexOf(' ');
             const prompt = text.slice(firstSpaceIndex + 1);
             if (firstSpaceIndex == -1 || prompt.length < 1) {
-                chatContent.add(SystemMessage(`Usage: \`/prompt MESSAGE\``, '/prompt', geminiView))
+                chatContent.add(SystemMessage(`Usage: \`/prompt MESSAGE\``, '/prompt', GeminiView))
             }
             else {
                 GeminiService.addMessage('user', prompt)
@@ -237,25 +245,25 @@ export const sendMessage = (text) => {
         else if (text.startsWith('/key')) {
             const parts = text.split(' ');
             if (parts.length == 1) chatContent.add(SystemMessage(
-                `Key stored in:\n\`${GeminiService.keyPath}\`\nTo update this key, type \`/key YOUR_API_KEY\``,
+                `${getString("Key stored in:")} \n\`${GeminiService.keyPath}\`\n${getString("To update this key, type")} \`/key YOUR_API_KEY\``,
                 '/key',
-                geminiView));
+                GeminiView));
             else {
                 GeminiService.key = parts[1];
-                chatContent.add(SystemMessage(`Updated API Key at\n\`${GeminiService.keyPath}\``, '/key', geminiView));
+                chatContent.add(SystemMessage(`${getString("Updated API Key at")}\n\`${GeminiService.keyPath}\``, '/key', GeminiView));
             }
         }
         else if (text.startsWith('/test'))
-            chatContent.add(SystemMessage(markdownTest, `Markdown test`, geminiView));
+            chatContent.add(SystemMessage(markdownTest, `Markdown test`, GeminiView));
         else
-            chatContent.add(SystemMessage(`Invalid command.`, 'Error', geminiView))
+            chatContent.add(SystemMessage(getString(`Invalid command.`), 'Error', GeminiView))
     }
     else {
         GeminiService.send(text);
     }
 }
 
-export const geminiView = Box({
+export const GeminiView = (chatEntry) => Box({
     homogeneous: true,
     children: [Scrollable({
         className: 'sidebar-chat-viewport',
@@ -280,7 +288,7 @@ export const geminiView = Box({
             // Always scroll to bottom with new content
             const adjustment = scrolledWindow.get_vadjustment();
             adjustment.connect("changed", () => Utils.timeout(1, () => {
-                if(!chatEntry.hasFocus) return;
+                if (!chatEntry.hasFocus) return;
                 adjustment.set_value(adjustment.get_upper() - adjustment.get_page_size());
             }))
         }

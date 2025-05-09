@@ -43,7 +43,7 @@ const BluetoothDevice = (device) => {
                 label: device.connected ? 'Connected' : (device.paired ? 'Paired' : ''),
                 className: 'txt-subtext',
                 setup: (self) => self.hook(device, (self) => {
-                    self.label = device.connected ? 'Connected' : (device.paired ? 'Paired' : '');
+                    self.label = device.connected ? getString('Connected') : (device.paired ? getString('Paired') : '');
                 }),
             }),
         ]
@@ -56,15 +56,19 @@ const BluetoothDevice = (device) => {
         onChange: (self, newValue) => {
             device.setConnection(newValue);
         },
-        extraSetup: (self) => self.hook(device, (self) => {
-            Utils.timeout(200, () => self.enabled.value = device.connected);
-        }),
+        extraSetup: (self) => {
+            self.hook(device, () => {
+                const enabledState = self.attribute.enabled;
+                if (enabledState.value !== device.connected)
+                    enabledState.value = device.connected;
+            });
+        },
     })
     const deviceRemoveButton = Button({
         vpack: 'center',
         className: 'sidebar-bluetooth-device-remove',
         child: MaterialIcon('delete', 'norm'),
-        tooltipText: 'Remove device',
+        tooltipText: getString('Remove device'),
         setup: setupCursorHover,
         onClicked: () => execAsync(['bluetoothctl', 'remove', device.address]).catch(print),
     });
@@ -144,7 +148,7 @@ export default (props) => {
                 execAsync(['bash', '-c', userOptions.apps.bluetooth]).catch(print);
                 closeEverything();
             },
-            label: 'More',
+            label: getString('More'),
             setup: setupCursorHover,
         })],
     })

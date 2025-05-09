@@ -12,10 +12,9 @@ import { MarginRevealer } from '../../.widgethacks/advancedrevealers.js';
 import { setupCursorHover, setupCursorHoverInfo } from '../../.widgetutils/cursorhover.js';
 import WaifuService from '../../../services/waifus.js';
 import { darkMode } from '../../.miscutils/system.js';
-import { chatEntry } from '../apiwidgets.js';
 
 async function getImageViewerApp(preferredApp) {
-    Utils.execAsync(['bash', '-c', `command -v ${preferredApp}`])
+   return Utils.execAsync(['bash', '-c', `command -v ${preferredApp}`])
         .then((output) => {
             if (output != '') return preferredApp;
             else return 'xdg-open';
@@ -71,12 +70,12 @@ const WaifuInfo = () => {
                         className: 'txt-smallie txt-subtext',
                         wrap: true,
                         justify: Gtk.Justification.CENTER,
-                        label: 'Powered by waifu.im + other APIs',
+                        label: getString('Powered by waifu.im + other APIs'),
                     }),
                     Button({
                         className: 'txt-subtext txt-norm icon-material',
                         label: 'info',
-                        tooltipText: 'Type tags for a random pic.\nNSFW content will not be returned unless\nyou explicitly request such a tag.\n\nDisclaimer: Not affiliated with the providers\nnor responsible for any of their content.',
+                        tooltipText: getString('Type tags for a random pic.\nNSFW content will not be returned unless\nyou explicitly request such a tag.\n\nDisclaimer: Not affiliated with the providers\nnor responsible for any of their content.'),
                         setup: setupCursorHoverInfo,
                     }),
                 ]
@@ -89,7 +88,7 @@ const waifuWelcome = Box({
     vexpand: true,
     homogeneous: true,
     child: Box({
-        className: 'spacing-v-15',
+        className: 'spacing-v-15 margin-top-15 margin-bottom-15',
         vpack: 'center',
         vertical: true,
         children: [
@@ -123,11 +122,11 @@ const WaifuImage = (taglist) => {
         transition: 'slide_up_down',
         transitionDuration: userOptions.animations.durationSmall,
         children: {
-            'api': ImageState('api', 'Calling API'),
-            'download': ImageState('downloading', 'Downloading image'),
-            'done': ImageState('done', 'Finished!'),
-            'error': ImageState('error', 'Error'),
-            'notfound': ImageState('error', 'Not found!'),
+            'api': ImageState('api', getString('Calling API')),
+            'download': ImageState('downloading', getString('Downloading image')),
+            'done': ImageState('done', getString('Finished!')),
+            'error': ImageState('error', getString('Error')),
+            'notfound': ImageState('error', getString('Not found!')),
         },
     });
     const downloadIndicator = MarginRevealer({
@@ -156,12 +155,12 @@ const WaifuImage = (taglist) => {
                     children: [
                         Box({ hexpand: true }),
                         ImageAction({
-                            name: 'Go to source',
+                            name: getString('Go to source'),
                             icon: 'link',
                             action: () => execAsync(['xdg-open', `${thisBlock.attribute.imageData.source}`]).catch(print),
                         }),
                         ImageAction({
-                            name: 'Hoard',
+                            name: getString('Hoard'),
                             icon: 'save',
                             action: (self) => {
                                 execAsync(['bash', '-c', `mkdir -p $(xdg-user-dir PICTURES)/homework${thisBlock.attribute.isNsfw ? '/🌶️' : ''} && cp ${thisBlock.attribute.imagePath} $(xdg-user-dir PICTURES)/homework${thisBlock.attribute.isNsfw ? '/🌶️/' : ''}`])
@@ -170,7 +169,7 @@ const WaifuImage = (taglist) => {
                             },
                         }),
                         ImageAction({
-                            name: 'Open externally',
+                            name: getString('Open externally'),
                             icon: 'open_in_new',
                             action: () => execAsync([IMAGE_VIEWER_APP, `${thisBlock.attribute.imagePath}`]).catch(print),
                         }),
@@ -186,13 +185,16 @@ const WaifuImage = (taglist) => {
         transition: 'slide_down',
         transitionDuration: userOptions.animations.durationLarge,
         revealChild: false,
-        child: Overlay({
-            child: Box({
-                homogeneous: true,
-                className: 'sidebar-waifu-image margin-top-5',
-                children: [blockImage],
-            }),
-            overlays: [blockImageActions],
+        child: Box({
+            className: 'margin-top-5',
+            children: [Overlay({
+                child: Box({
+                    homogeneous: true,
+                    className: 'sidebar-waifu-image',
+                    children: [blockImage],
+                }),
+                overlays: [blockImageActions],
+            })]
         }),
     });
     const thisBlock = Box({
@@ -299,7 +301,7 @@ const waifuContent = Box({
     ,
 });
 
-export const waifuView = Scrollable({
+export const WaifuView = (chatEntry) => Scrollable({
     className: 'sidebar-chat-viewport',
     vexpand: true,
     child: Box({
@@ -365,7 +367,7 @@ export const waifuCommands = Box({
         self.pack_start(Button({
             className: 'sidebar-chat-chip-toggle',
             setup: setupCursorHover,
-            label: 'Tags →',
+            label: getString('Tags →'),
             onClicked: () => {
                 waifuTags.revealChild = !waifuTags.revealChild;
             }

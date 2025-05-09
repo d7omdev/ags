@@ -61,6 +61,7 @@ function detectMediaSource(link) {
   if (domain == "scdn.co") return "󰓇 Spotify";
   if (domain == "reddit.com") return " Reddit";
   if (domain == "getCoverArt.view") return "󰫔 Navidrome";
+  if (domain == "homelab.d") return " Homelab";
   return domain;
 }
 

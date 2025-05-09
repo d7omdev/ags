@@ -3,7 +3,6 @@ import Hyprland from "resource:///com/github/Aylur/ags/service/hyprland.js";
 const { Gravity } = imports.gi.Gdk;
 const { exec, execAsync } = Utils;
 const { Box, Button, Icon, Menu, MenuItem, Label, Overlay, EventBox } = Widget;
-import { showAppTitle } from "../../../variables.js";
 
 const createContextMenu = (client) =>
   Menu({
@@ -67,7 +66,6 @@ const activeAppClass = await execAsync(["hyprctl", "activewindow"]).then(
 const AppButton = (client) => {
   const iconName = client.class.toLowerCase();
   const workspaceID = client.workspace.id.toString();
-  // Create a concise tooltip text from the client data
   const tooltipText =
     client.class +
     " • " +
@@ -76,8 +74,6 @@ const AppButton = (client) => {
       : client.title);
 
   return EventBox({
-    onHover: () => (showAppTitle.value = true),
-    onHoverLost: () => (showAppTitle.value = false),
     child: Box({
       children: [
         Button({
