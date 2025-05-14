@@ -51,8 +51,8 @@
     "imageViewer": "loupe",
     "network": "XDG_CURRENT_DESKTOP=\"gnome\" gnome-control-center wifi",
     "settings": "XDG_CURRENT_DESKTOP=\"gnome\" gnome-control-center",
-    "taskManager": "gnome-usage",
-    "terminal": "foot", // This is only for shell actions
+    "taskManager": "missioncenter",
+    "terminal": "kitty", // This is only for shell actions
   },
   "bar": {
     // Whether to show Swap and CPU usage when there's media. RAM is always shown.
@@ -60,7 +60,7 @@
     // Array of bar modes for each monitor. Hit Ctrl+Alt+Slash to cycle.
     // Modes: "normal", "focus" (workspace indicator only), "nothing"
     // Example for four monitors: ["normal", "focus", "normal", "nothing"]
-    "modes": ["normal"],
+    "modes": ["normal", "focus", "normal", "nothing"],
   },
   "battery": {
     "low": 20,
@@ -262,4 +262,3 @@
     },
   },
 }
-
