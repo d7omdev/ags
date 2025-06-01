@@ -4,7 +4,7 @@ import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import * as Utils from "resource:///com/github/Aylur/ags/utils.js";
 import Mpris from "resource:///com/github/Aylur/ags/service/mpris.js";
 const { exec, execAsync } = Utils;
-const { Box, EventBox, Icon, Scrollable, Label, Button, Revealer } = Widget;
+const { Box, EventBox, Icon, Scrollable, Label, Button, Revealer, Slider } = Widget;
 
 import { fileExists } from "../.miscutils/files.js";
 import { AnimatedCircProg } from "../.commonwidgets/cairo_circularprogress.js";
@@ -507,6 +507,59 @@ const PlayState = ({ player }) => {
       ],
       passThrough: true,
     }),
+  });
+};
+
+// Add TrackSeekSlider component
+const TrackSeekSlider = ({ player }) => {
+  return EventBox({
+    child: Slider({
+      min: 0,
+      max: player.length || 1,
+      value: player.position || 0,
+      drawValue: false,
+      className: "osd-music-seek-slider",
+      hpack: "fill",
+      attribute: {
+        clicked: false,
+        setPosition: (self, event) => {
+          if (!player) return;
+          const allocation = self.get_allocation();
+          const [cursorX] = event.get_coords();
+          const percent = Math.max(0, Math.min(cursorX / allocation.width, 1));
+          player.position = Math.round(percent * player.length);
+        }
+      },
+      setup: (self) => {
+        self
+          .on('motion-notify-event', (self, event) => {
+            if (!self.attribute.clicked) return;
+            self.attribute.setPosition(self, event);
+          })
+          .on('button-press-event', (self, event) => {
+            if (event.get_button()[1] !== 1) return; // Left click only
+            self.attribute.clicked = true;
+            self.attribute.setPosition(self, event);
+          })
+          .on('button-release-event', (self) => {
+            self.attribute.clicked = false;
+          })
+          .poll(500, (slider) => {
+            if (!player) return;
+            slider.max = player.length || 1;
+            slider.value = player.position || 0;
+          })
+          .hook(player, (slider) => {
+            if (!player) return;
+            slider.max = player.length || 1;
+            slider.value = player.position || 0;
+          }, "notify::position")
+          .hook(player, (slider) => {
+            if (!player) return;
+            slider.max = player.length || 1;
+          }, "notify::length");
+      }
+    })
   });
 };
 

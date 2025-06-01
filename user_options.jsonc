@@ -18,9 +18,9 @@
     "sidebar": {
         "pages": {
             "apis": {
-                "defaultPage": "gpt"
+                "defaultPage": "gemini"
             },
-            "defaultPage": "apis"
+            "defaultPage": "tools"
         },
         "calendar": {
             "expandByDefault": false

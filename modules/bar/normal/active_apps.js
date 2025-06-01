@@ -152,6 +152,8 @@ export const ActiveApps = (props = {}) => {
       // Update app list when clients are added or removed
       self.hook(Hyprland, updateAppList, "client-added");
       self.hook(Hyprland, updateAppList, "client-removed");
+      self.hook(Hyprland, updateAppList, "workspace-added");
+      self.hook(Hyprland, updateAppList, "workspace-removed");
 
       // Initial population of the app list
       updateAppList();
