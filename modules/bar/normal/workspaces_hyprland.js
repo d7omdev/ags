@@ -38,6 +38,9 @@ const getFontWeightName = (weight) => {
 
 // Font size = workspace id
 const WorkspaceContents = (count = 10) => {
+    // Chinese characters for numbers 1-10
+    const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+    
     return DrawingArea({
         className: 'bar-ws-container',
         attribute: {
@@ -112,7 +115,7 @@ const WorkspaceContents = (count = 10) => {
                 layout.set_font_description(fontDesc);
                 cr.setAntialias(Cairo.Antialias.BEST);
                 // Get kinda min radius for number indicators
-                layout.set_text("0".repeat(count.toString().length), -1);
+                layout.set_text("十", -1); // Use Chinese character for sizing
                 const [layoutWidth, layoutHeight] = layout.get_pixel_size();
                 const indicatorRadius = Math.max(layoutWidth, layoutHeight) / 2 * 1.15; // smaller than sqrt(2)*radius
                 const indicatorGap = workspaceRadius - indicatorRadius;
@@ -165,7 +168,10 @@ const WorkspaceContents = (count = 10) => {
                     else
                         cr.setSourceRGBA(inactivecolors.red, inactivecolors.green, inactivecolors.blue, inactivecolors.alpha);
 
-                    layout.set_text(`${i + offset}`, -1);
+                    // Use Chinese character for display based on actual workspace ID
+                    const actualWsId = i + offset;
+                    const displayText = actualWsId <= 10 ? chineseNumbers[actualWsId - 1] : `${actualWsId}`;
+                    layout.set_text(displayText, -1);
                     const [layoutWidth, layoutHeight] = layout.get_pixel_size();
                     const x = -workspaceRadius + (workspaceDiameter * i) - (layoutWidth / 2);
                     const y = (height - layoutHeight) / 2;

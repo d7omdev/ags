@@ -20,10 +20,10 @@
             "apis": {
                 "defaultPage": "gemini"
             },
-            "defaultPage": "tools"
+            "defaultPage": "apis"
         },
         "calendar": {
-            "expandByDefault": false
+            "expandByDefault": true
         },
         "image": {
             "allowNsfw": false
